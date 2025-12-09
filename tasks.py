@@ -238,9 +238,7 @@ def party_popper():
 
 
 def run_setup():
-    subprocess.run(
-        shlex.split("kind create cluster --name bsbingo"), check=True
-    )
+    subprocess.run(shlex.split("kind create cluster --name bsbingo"), check=True)
     subprocess.run(shlex.split("make compile"), check=True)
 
     print("Dependencies compiled successfully.")

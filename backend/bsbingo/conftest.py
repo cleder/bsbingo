@@ -1,5 +1,4 @@
 import pytest
-
 from bsbingo.users.models import User
 from bsbingo.users.tests.factories import UserFactory
 
