@@ -52,6 +52,7 @@ dev = [
     "pyopenssl==25.3.0",
     "pyprojectsort>=0.4.0",
     "redis==7.1.0",
+    "ruff>=0.14.8",
     "rumdl>=0.0.191",
     "sentry-sdk==2.47.0",
     "service-identity==24.2.0",

@@ -1,9 +1,7 @@
-"""
-With these settings, tests run faster.
-"""
+"""With these settings, tests run faster."""
 
-from .base import *  # noqa
-from .base import env
+from backend.config.settings.base import *  # noqa
+from backend.config.settings.base import env
 
 # GENERAL
 # ------------------------------------------------------------------------------

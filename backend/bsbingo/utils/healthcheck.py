@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpResponseServerError
 logger = logging.getLogger("healthz")
 
 
-class HealthCheckMiddleware(object):
+class HealthCheckMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
         # One-time configuration and initialization.
@@ -14,14 +14,12 @@ class HealthCheckMiddleware(object):
         if request.method == "GET":
             if request.path == "/readiness":
                 return self.readiness(request)
-            elif request.path == "/healthz":
+            if request.path == "/healthz":
                 return self.healthz(request)
         return self.get_response(request)
 
     def healthz(self, request):
-        """
-        Returns that the server is alive.
-        """
+        """Returns that the server is alive."""
         return HttpResponse("OK")
 
     def readiness(self, request):
