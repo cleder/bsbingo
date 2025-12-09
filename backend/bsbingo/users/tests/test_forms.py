@@ -1,5 +1,4 @@
 import pytest
-
 from bsbingo.users.forms import UserCreationForm
 from bsbingo.users.tests.factories import UserFactory
 
