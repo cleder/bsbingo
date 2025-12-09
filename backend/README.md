@@ -1,3 +1,5 @@
-## bsbingo
+# BsBingo
 
-BS/Buzzword Bingo!
+Buzzword Bingo!
+
+Yes, Buzz is abbreviated to `bs` ;-)

@@ -3,7 +3,8 @@
 ## Using SealedSecrets
 
 SealedSecrets can be used to encrypt passwords for the values to be safely checked in.
-Creating a new secret involves encrypting the secret using kubeseal. [Installing kubeseal](https://github.com/bitnami-labs/sealed-secrets#kubeseal).
+Creating a new secret involves encrypting the secret using kubeseal.
+[Installing kubeseal](https://github.com/bitnami-labs/sealed-secrets#kubeseal).
 
 Configure kubernetes to your current project config and context, making sure you are in the correct prod/sandbox environment
 
@@ -12,14 +13,16 @@ Configure kubernetes to your current project config and context, making sure you
 
 (replace environment with the actual environment name, e.g. `sandbox` or `production`)
 
-
-Add the secrets to your manifest using the secrets template file, and run kubeseal on the unencrypted values. The makefile target `sandbox-secrets` will replace the variables in `./k8s/templates/secrets.yaml.template` with the encoded variables from the environment, and copy the manifest with the encrypted values to `.k8s/overlays/sandbox/secrets.yaml`. The same can be done for the prod environment using the `prod-secrets` target
+Add the secrets to your manifest using the secrets template file, and run kubeseal on the unencrypted values.
+The makefile target `sandbox-secrets` will replace the variables in `./k8s/templates/secrets.yaml.template` with the encoded variables from the environment, and copy the manifest with the encrypted values to `.k8s/overlays/sandbox/secrets.yaml`.
+The same can be done for the prod environment using the `prod-secrets` target
 
     $ make sandbox-secrets
 
     $ make prod-secrets
 
-The `k8s/*/secrets.yaml` file can now be safely checked in. The passwords will be unencrypted by SealedSecrets in the cluster.
+The `k8s/*/secrets.yaml` file can now be safely checked in.
+The passwords will be unencrypted by SealedSecrets in the cluster.
 When a secret is added/removed update the `k8s/templates` files, update the environment variables in .envrc and rerun the make commands.
 
 The decrypted values can be retrieved running:

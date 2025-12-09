@@ -1,6 +1,6 @@
 # BsBingo
 
-BullSh** bingo
+BuzzWord bingo
 
 ## :information_source: About the BsBingo project
 

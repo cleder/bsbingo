@@ -5,12 +5,14 @@
 1. Log in to sentry.io and click the Create Project button
 2. Choose Django
 3. Name the Project with client-backend naming convention (ex. bsbingo-backend)
-4. Assign a team (create a team, if needed, with the plus icon next to the team dropdown). Teams should be based around the people involved in a project or projects that need to know about errors, not just the client.
+4. Assign a team (create a team, if needed, with the plus icon next to the team dropdown).
+   Teams should be based around the people involved in a project or projects that need to know about errors, not just the client.
 5. Click the Create Project button
 6. Repeat the above steps with the following changes:
 7. Choose Next.js
 8. Name the Project with client-frontend naming convention (ex. bsbingo-frontend)
-9. Assign a team (create a team, if needed, with the plus icon next to the team dropdown). Teams should be based around the people involved in a project or projects that need to know about errors, not just the client.
+9. Assign a team (create a team, if needed, with the plus icon next to the team dropdown).
+   Teams should be based around the people involved in a project or projects that need to know about errors, not just the client.
 10. Click the Create Project button
 
 ### Configure Slack Notifications
@@ -27,6 +29,7 @@
 10. Add an Action and choose “Send a notification to the Slack workspace” option from the menu and fill in the appropriate `#channel` name
 
 ### Add Team Members
+
 1. Click Settings on the sidebar
 2. Click Teams on the secondary sidebar that is revealed
 3. Click on the Team assigned to the Project you just created
@@ -34,9 +37,10 @@
 
 ### Add code to Django
 
-By default this is in the base config. Make sure the following is to your preferences in all logical locations in the `backend/config/settings/{environment}.py` files:
+By default this is in the base config.
+Make sure the following is to your preferences in all logical locations in the `backend/config/settings/{environment}.py` files:
 
-```
+```text
     import sentry_sdk
     ...
     sentry_sdk.init(
@@ -46,6 +50,6 @@ By default this is in the base config. Make sure the following is to your prefer
     )
 ```
 
-Update `k8s/base/app.configmap.yaml` `SENTRY_DSN_BACKEND`, `VITE_SENTRY_DSN_FRONTEND` with the DSNs provided for the relevant Sentry projects. 
+Update `k8s/base/app.configmap.yaml` `SENTRY_DSN_BACKEND`, `VITE_SENTRY_DSN_FRONTEND` with the DSNs provided for the relevant Sentry projects.
 
 You can find them in Sentry by clicking Settings on the sidebar, then Projects on the secondary sidebar, then the project, then Client Keys (DSN)

@@ -3,6 +3,7 @@
 The steps below describe how to set up interactive debugging with PyCharm.
 
 ## PyCharm Debugging Setup
+
 Update `k8s/base/app.configmap.yaml` with `data` field `PYTHONBREAKPOINT: "utils.pycharm_debugger"`
 
 In PyCharm:
@@ -20,6 +21,7 @@ In PyCharm:
 ![debug__debug_configuration.png](images/debug__debug_configuration.png)
 
 ## Debugging in development
+
 Before the code you want to debug, add the following:
 
 ```python

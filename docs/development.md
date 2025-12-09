@@ -8,8 +8,9 @@ Depending on your operating system, the installation instructions may vary.
 The documentation and scripts in the repo are written to work with `kubectl`, `kind` and `Tilt`.
 
 Consult the links below if you prefer to use Minikube or Docker Desktop instead:
-* [minikube](https://minikube.sigs.k8s.io/docs/start/).
-* [Docker](https://docs.docker.com/get-docker/).
+
+- [minikube](https://minikube.sigs.k8s.io/docs/start/).
+- [Docker](https://docs.docker.com/get-docker/).
 
 ## Setup your environment
 
@@ -18,16 +19,12 @@ Consult the links below if you prefer to use Minikube or Docker Desktop instead:
        $ git clone git@github.com:cleder/bsbingo.git
        $ cd bsbingo
 
-2. Prepare the environment variables. Edit the `.envrc` file to work for your environment.
+2. Prepare the environment variables.
+   Edit the `.envrc` file to work for your environment.
 
    **For personal environment configurations**: Create a `.envrc.local` file for your personal development settings that won't be committed to version control:
 
-   ```bash
-   # Example .envrc.local file
-   export DEBUG=true
-   export LOG_LEVEL=debug
-   export LOCAL_DEV_SETTING=custom_value
-   ```
+## Example .envrc.local file export DEBUG=true export LOG_LEVEL=debug export LOCAL_DEV_SETTING=custom_value
 
    The `.envrc.local` file will be automatically loaded when you enter the directory (after `.envrc`), allowing you to override or add environment variables without modifying the shared `.envrc` file.
 
@@ -38,9 +35,8 @@ First load the environment variables, then run:
       $ make setup
       $ tilt up
 
-:information_source: It may take a little bit of time for all the services to start up, and it's possible for
-the first run to fail because of timing conflicts. If you do see messages indicating there
-were errors during the first run, stop all the containers using Ctrl-C, and then try it again.
+:information_source: It may take a little bit of time for all the services to start up, and it's possible for the first run to fail because of timing conflicts.
+If you do see messages indicating there were errors during the first run, stop all the containers using Ctrl-C, and then try it again.
 
 You are now ready to edit the code.
 The app will be automatically reloaded when its files change.
@@ -56,21 +52,19 @@ To remove the cluster entirely:
        $ kind delete cluster --name bsbingo
 
 To switch between different Scaf project contexts:
-      
+
       $ tilt down    # inside the codebase of the previous project
       $ make setup   # inside the codebase of the project you want to work on
       $ tilt up
 
 ## Next steps
 
-Creating a superuser account in the backend is useful so you have access to
-Django Admin that will be accessible at [http://localhost:8000/admin](http://localhost:8000/admin)
+Creating a superuser account in the backend is useful so you have access to Django Admin that will be accessible at [http://localhost:8000/admin](http://localhost:8000/admin)
 
 To create a superuser use the following commands:
 
     $ make shell-backend
     $ ./manage.py createsuperuser
-
 
 ## Update dependencies
 
@@ -78,7 +72,6 @@ To update the backend app dependencies, you must edit the `backend/requirements/
 Once you have made your changes, you need to regenerate the `backend/requirements/*.txt` files using:
 
        $ make compile
-
 
 ## Resource Limits Consideration
 
@@ -88,5 +81,5 @@ Resource limits have been predefined for both Django and NextJS services to ensu
   - Requests: `cpu: 200m`, `memory: 300Mi`
   - Limits: `cpu: 250m`, `memory: 400Mi`
 
-
-Ensure these values are appropriate for your environment. If needed, adjust them based on real workload observations in a staging or production environment to balance performance and resource consumption.
+Ensure these values are appropriate for your environment.
+If needed, adjust them based on real workload observations in a staging or production environment to balance performance and resource consumption.
