@@ -96,7 +96,7 @@ For more details on the architecture, see the [Architecture Documentation](./arc
 
 ## Key Features
 
-- Next.js frontend with TypeScript and GraphQL integration
+- HTMX Frontend
 - Django backend with GraphQL API
 - Celery for background task processing
 - Kubernetes manifests for deployment

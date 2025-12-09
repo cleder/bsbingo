@@ -71,50 +71,9 @@ flowchart TD
 
 ## Application Architecture
 
-### Frontend (Next.js)
+### Frontend (django-htmx)
 
-The frontend is built with Next.js and TypeScript, using Apollo Client for GraphQL communication with the backend.
-
-```mermaid
-%%{
-  init: {
-    'theme': 'base',
-    'themeVariables': {
-      'primaryColor': '#282828',
-      'primaryTextColor': '#ebdbb2',
-      'primaryBorderColor': '#7c6f64',
-      'lineColor': '#7c6f64',
-      'secondaryColor': '#3c3836',
-      'tertiaryColor': '#504945'
-    }
-  }
-}%%
-flowchart LR
-    %% Node styling
-    
-    subgraph FrontendArch["Frontend Architecture"]
-        subgraph NextComponents["Next.js Components"]
-            PAGES[Pages] --> COMPS[Components]
-            PAGES --> HOOKS[Hooks/Utils]
-            APOLLO[Apollo Client] --> GQL[GraphQL Queries/Mutations] 
-            PAGES --> APOLLO
-        end
-    end
-    
-    APOLLO --> |HTTP/GraphQL| API[Backend API]
-    
-    %% Style definitions - Gruvbox Dark theme
-    classDef frontend fill:#d79921,stroke:#b57614,stroke-width:2px,color:#282828,font-weight:bold
-    classDef api fill:#689d6a,stroke:#427b58,stroke-width:2px,color:#282828,font-weight:bold
-    
-    %% Apply styles
-    class PAGES,COMPS,HOOKS,APOLLO,GQL frontend
-    class API api
-    
-    %% Explicit styling for subgraph titles - works in both light and dark modes
-    style FrontendArch fill:#282828,color:#fabd2f,font-weight:bold
-    style NextComponents fill:#282828,color:#fabd2f,font-weight:bold
-```
+[django-htmx](https://django-htmx.readthedocs.io/en/latest/index.html)
 
 ### Backend (Django)
 
