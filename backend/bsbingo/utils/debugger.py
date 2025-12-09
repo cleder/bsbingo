@@ -1,10 +1,11 @@
 import logging
 import os
+from typing import Never
 
 logger = logging.getLogger(__name__)
 
 
-def pycharm_debugger():
+def pycharm_debugger() -> None:
     logger.info("Pycharm pydevd connecting...")
     import pydevd_pycharm
 
@@ -15,8 +16,9 @@ def pycharm_debugger():
         )
     except ConnectionRefusedError:
         msg = "Debugger connection failed. Check IDE debugger is running and try again. Continuing without debugger."
-        logger.error(msg.upper())
+        logger.exception(msg.upper())
 
 
-def vscode_debugger():
-    raise NotImplementedError("VSCode debugger not implemented")
+def vscode_debugger() -> Never:
+    msg = "VSCode debugger not implemented"
+    raise NotImplementedError(msg)

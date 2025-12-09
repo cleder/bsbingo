@@ -7,7 +7,7 @@ pytestmark = pytest.mark.django_db
 
 
 class TestUserCreationForm:
-    def test_clean_username(self):
+    def test_clean_username(self) -> None:
         # A user with proto_user params does not exist yet.
         proto_user = UserFactory.build()
 

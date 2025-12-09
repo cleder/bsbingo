@@ -6,7 +6,7 @@ logger = logging.getLogger("healthz")
 
 
 class HealthCheckMiddleware:
-    def __init__(self, get_response):
+    def __init__(self, get_response) -> None:
         self.get_response = get_response
         # One-time configuration and initialization.
 
@@ -18,11 +18,11 @@ class HealthCheckMiddleware:
                 return self.healthz(request)
         return self.get_response(request)
 
-    def healthz(self, request):
+    def healthz(self, request) -> HttpResponse:
         """Returns that the server is alive."""
         return HttpResponse("OK")
 
-    def readiness(self, request):
+    def readiness(self, request) -> HttpResponse | HttpResponseServerError:
         # Connect to each database and do a generic standard SQL query
         # that doesn't write any data and doesn't depend on any tables
         # being present.

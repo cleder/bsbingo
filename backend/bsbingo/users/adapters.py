@@ -1,9 +1,11 @@
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from allauth.account.adapter import DefaultAccountAdapter
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from django.conf import settings
-from django.http import HttpRequest
+
+if TYPE_CHECKING:
+    from django.http import HttpRequest
 
 
 class AccountAdapter(DefaultAccountAdapter):

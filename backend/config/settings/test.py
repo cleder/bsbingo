@@ -1,7 +1,7 @@
 """With these settings, tests run faster."""
 
-from backend.config.settings.base import *  # noqa
-from backend.config.settings.base import env
+from config.settings.base import *  # noqa
+from config.settings.base import env
 
 # GENERAL
 # ------------------------------------------------------------------------------
@@ -27,7 +27,7 @@ PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
 
 # TEMPLATES
 # ------------------------------------------------------------------------------
-TEMPLATES[-1]["OPTIONS"]["loaders"] = [  # type: ignore[index] # noqa F405
+TEMPLATES[-1]["OPTIONS"]["loaders"] = [  # type: ignore[index] # noqa: F405
     (
         "django.template.loaders.cached.Loader",
         [

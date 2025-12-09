@@ -14,11 +14,19 @@ repos:
       - id: check-xml
       - id: check-yaml
       - id: debug-statements
+        exclude: (?x)^(
+            backend/bsbingo/utils/debugger.py
+            )$
       - id: detect-private-key
       - id: end-of-file-fixer
       - id: mixed-line-ending
       - id: name-tests-test
         args: [--pytest-test-first]
+        exclude: (?x)^(
+                backend/bsbingo/users/tests/factories.py|
+                tests/hypothesis/common.py|
+                tests/hypothesis/strategies.py
+            )$
       # - id: no-commit-to-branch
       - id: pretty-format-json
       - id: requirements-txt-fixer

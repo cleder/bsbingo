@@ -1,9 +1,14 @@
+from typing import TYPE_CHECKING
+
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView, RedirectView, UpdateView
+
+if TYPE_CHECKING:
+    from django.http.response import HttpResponseRedirect
 
 User = get_user_model()
 
@@ -27,7 +32,7 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
     def get_object(self):
         return User.objects.get(username=self.request.user.username)
 
-    def form_valid(self, form):
+    def form_valid(self, form) -> HttpResponseRedirect:
         messages.add_message(
             self.request, messages.INFO, _("Infos successfully updated")
         )

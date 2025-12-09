@@ -1,5 +1,5 @@
-from django.conf import settings
+from django.conf import LazySettings, settings
 
 
-def settings_context(_request):
+def settings_context(_request) -> dict[str, LazySettings]:
     return {"settings": settings}

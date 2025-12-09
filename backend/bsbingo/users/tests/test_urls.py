@@ -1,12 +1,15 @@
+from typing import TYPE_CHECKING
+
 import pytest
 from django.urls import resolve, reverse
 
-from bsbingo.users.models import User
+if TYPE_CHECKING:
+    from bsbingo.users.models import User
 
 pytestmark = pytest.mark.django_db
 
 
-def test_detail(user: User):
+def test_detail(user: User) -> None:
     assert (
         reverse("users:detail", kwargs={"username": user.username})
         == f"/users/{user.username}/"
@@ -14,11 +17,11 @@ def test_detail(user: User):
     assert resolve(f"/users/{user.username}/").view_name == "users:detail"
 
 
-def test_update():
+def test_update() -> None:
     assert reverse("users:update") == "/users/~update/"
     assert resolve("/users/~update/").view_name == "users:update"
 
 
-def test_redirect():
+def test_redirect() -> None:
     assert reverse("users:redirect") == "/users/~redirect/"
     assert resolve("/users/~redirect/").view_name == "users:redirect"

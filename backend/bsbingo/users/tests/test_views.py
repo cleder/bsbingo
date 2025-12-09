@@ -1,11 +1,16 @@
+from typing import TYPE_CHECKING
+
 import pytest
 from django.contrib.auth.models import AnonymousUser
 from django.http.response import Http404
-from django.test import RequestFactory
 
-from bsbingo.users.models import User
 from bsbingo.users.tests.factories import UserFactory
 from bsbingo.users.views import UserRedirectView, UserUpdateView, user_detail_view
+
+if TYPE_CHECKING:
+    from django.test import RequestFactory
+
+    from bsbingo.users.models import User
 
 pytestmark = pytest.mark.django_db
 
@@ -20,7 +25,7 @@ class TestUserUpdateView:
 
     """
 
-    def test_get_success_url(self, user: User, rf: RequestFactory):
+    def test_get_success_url(self, user: User, rf: RequestFactory) -> None:
         view = UserUpdateView()
         request = rf.get("/fake-url/")
         request.user = user
@@ -29,7 +34,7 @@ class TestUserUpdateView:
 
         assert view.get_success_url() == f"/users/{user.username}/"
 
-    def test_get_object(self, user: User, rf: RequestFactory):
+    def test_get_object(self, user: User, rf: RequestFactory) -> None:
         view = UserUpdateView()
         request = rf.get("/fake-url/")
         request.user = user
@@ -40,7 +45,7 @@ class TestUserUpdateView:
 
 
 class TestUserRedirectView:
-    def test_get_redirect_url(self, user: User, rf: RequestFactory):
+    def test_get_redirect_url(self, user: User, rf: RequestFactory) -> None:
         view = UserRedirectView()
         request = rf.get("/fake-url")
         request.user = user
@@ -51,7 +56,7 @@ class TestUserRedirectView:
 
 
 class TestUserDetailView:
-    def test_authenticated(self, user: User, rf: RequestFactory):
+    def test_authenticated(self, user: User, rf: RequestFactory) -> None:
         request = rf.get("/fake-url/")
         request.user = UserFactory()
 
@@ -59,7 +64,7 @@ class TestUserDetailView:
 
         assert response.status_code == 200
 
-    def test_not_authenticated(self, user: User, rf: RequestFactory):
+    def test_not_authenticated(self, user: User, rf: RequestFactory) -> None:
         request = rf.get("/fake-url/")
         request.user = AnonymousUser()  # type: ignore
 
@@ -68,7 +73,7 @@ class TestUserDetailView:
         assert response.status_code == 302
         assert response.url == "/accounts/login/?next=/fake-url/"
 
-    def test_case_sensitivity(self, rf: RequestFactory):
+    def test_case_sensitivity(self, rf: RequestFactory) -> None:
         request = rf.get("/fake-url/")
         request.user = UserFactory(username="UserName")
 

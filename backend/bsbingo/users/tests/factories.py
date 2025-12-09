@@ -1,9 +1,11 @@
-from collections.abc import Sequence
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from django.contrib.auth import get_user_model
 from factory import Faker, post_generation
 from factory.django import DjangoModelFactory
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 
 class UserFactory(DjangoModelFactory):
@@ -12,7 +14,7 @@ class UserFactory(DjangoModelFactory):
     name = Faker("name")
 
     @post_generation
-    def password(self, create: bool, extracted: Sequence[Any], **kwargs):
+    def password(self, create: bool, extracted: Sequence[Any], **kwargs) -> None:
         password = (
             extracted
             if extracted
