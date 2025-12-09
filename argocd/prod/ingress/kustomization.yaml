@@ -1,0 +1,35 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+resources:
+- ../../sandbox/ingress
+patches:
+- patch: |-
+    - op: replace
+      path: /metadata/name
+      value: argocd-bsbingo-tls
+    - op: replace
+      path: /spec/secretName
+      value: argocd-bsbingo-tls
+    - op: replace
+      path: /spec/dnsNames
+      value:
+        - argocd.example.test
+  target:
+    kind: Certificate
+    name: argocd-sandbox-bsbingo-tls
+- patch: |-
+    - op: replace
+      path: /metadata/name
+      value: argocd-bsbingo
+    - op: replace
+      path: /spec/routes/0/match
+      value: Host(`argocd.example.test`)
+    - op: replace
+      path: /spec/routes/1/match
+      value: Host(`argocd.example.test`) && Headers(`Content-Type`, `application/grpc`)
+    - op: replace
+      path: /spec/tls
+      value: argocd-bsbingo-tls
+  target:
+    kind: IngressRoute
+    name: argocd-sandbox-bsbingo
+kind: Kustomization
