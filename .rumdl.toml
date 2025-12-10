@@ -54,5 +54,5 @@ reflow = true
 reflow-mode = "sentence-per-line"
 
 [MD044]
-names = ["rumdl", "Markdown", "GitHub"]  # Proper names that should be capitalized correctly
+names = ["rumdl", "Markdown", "GitHub", "BsBingo"]  # Proper names that should be capitalized correctly
 code_blocks_excluded = true  # Exclude code blocks from proper name check
