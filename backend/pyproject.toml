@@ -129,7 +129,7 @@ test = [
     "twisted==25.5.0",
     "txaio==25.12.2",
     "typing-extensions==4.15.0",
-    "tzdata==2025.2",
+    "tzdata==2025.3",
     "ujson==5.11.0",
     "urllib3==2.6.1",
     "zope-interface==8.1.1",
