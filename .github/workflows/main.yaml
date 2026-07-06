@@ -135,13 +135,13 @@ jobs:
       - name: Set ECR Repos
         run: |
           echo "ECR_REPO_BACKEND=${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/bsbingo-$TARGET_ENV-backend" >> $GITHUB_ENV
-          
+
 
       - name: Tag Images
         run: |
           cd k8s/$TARGET_ENV
           kustomize edit set image backend=$ECR_REPO_BACKEND:$SHORT_SHA
-          
+
 
       - name: Commit & Push to GitHub
         run: |

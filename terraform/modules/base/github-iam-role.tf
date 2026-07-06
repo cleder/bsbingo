@@ -22,7 +22,7 @@ resource "aws_iam_policy" "ecr_push_policy" {
           "ecr:CompleteLayerUpload"
         ],
         Resource = [
-          
+
           "arn:aws:ecr:${var.aws_region}:${var.account_id}:repository/${var.backend_ecr_repo}",
         ]
       },
@@ -40,4 +40,3 @@ resource "aws_iam_role_policy_attachment" "ecr_push_policy_attachment" {
   role       = data.aws_iam_role.github_oidc_role.name
   policy_arn = aws_iam_policy.ecr_push_policy.arn
 }
-

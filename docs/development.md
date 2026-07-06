@@ -28,7 +28,7 @@ Consult the links below if you prefer to use Minikube or Docker Desktop instead:
 
    The `.envrc.local` file will be automatically loaded when you enter the directory (after `.envrc`), allowing you to override or add environment variables without modifying the shared `.envrc` file.
 
-## Run the kubernetes cluster and the bsbingo app to develop the code
+## Run the kubernetes cluster and the BsBingo app to develop the code
 
 First load the environment variables, then run:
 

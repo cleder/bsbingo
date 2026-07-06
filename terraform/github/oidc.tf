@@ -78,5 +78,3 @@ resource "aws_iam_role" "github_oidc_role" {
 }
 EOF
 }
-
-

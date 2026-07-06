@@ -73,4 +73,3 @@ images:
   - name: backend
     newName: 000000000000.dkr.ecr.eu-west-1.amazonaws.com/bsbingo-sandbox-backend
     newTag: latest
-

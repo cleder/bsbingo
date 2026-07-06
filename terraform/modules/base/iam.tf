@@ -28,4 +28,3 @@ resource "aws_iam_user_policy_attachment" "amazon_ses_user_policy_attachment" {
   user       = aws_iam_user.amazon_ses_user.name
   policy_arn = aws_iam_policy.amazon_ses_policy.arn
 }
-

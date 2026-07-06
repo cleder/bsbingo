@@ -13,7 +13,7 @@ In PyCharm:
 3. Click on '+' in the top left of the dialog
 4. Select 'Python Debug Server'
 5. Set the host to 0.0.0.0 and the port to 6400, and the name as you see fit.
-6. For 'path mappings' set /path/to/bsbingo/backend=/app/src
+6. For 'path mappings' set /path/to/BsBingo/backend=/app/src
 7. Check 'Redirect console output to console'
 8. Remove check on 'Suspend after connect'.
 9. Click 'Ok'

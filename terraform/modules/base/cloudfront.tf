@@ -36,7 +36,7 @@ resource "aws_cloudfront_distribution" "cloudfront" {
     origin_access_control_id = aws_cloudfront_origin_access_control.static_storage.id
   }
 
-  
+
   // Default cache behavior for static files only (no frontend)
   default_cache_behavior {
     cache_policy_id          = data.aws_cloudfront_cache_policy.caching_optimized.id
@@ -46,7 +46,7 @@ resource "aws_cloudfront_distribution" "cloudfront" {
     viewer_protocol_policy   = "redirect-to-https"
     target_origin_id         = aws_s3_bucket.static_storage.id
   }
-  
+
 
   viewer_certificate {
     ssl_support_method       = "sni-only"
@@ -85,4 +85,3 @@ data "aws_iam_policy_document" "cloudfront_invalidator" {
 resource "aws_iam_access_key" "cloudfront_invalidator" {
   user = aws_iam_user.cloudfront_invalidator.name
 }
-
