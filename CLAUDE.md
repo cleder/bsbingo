@@ -3,5 +3,5 @@
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 <!-- SPECKIT START -->
-For additional context about technologies to be used, project structure, shell commands, and other important information, read the current plan
+For additional context about technologies to be used, project structure, shell commands, and other important information, read the current plan: `specs/001-django-postgresql-backend/plan.md`
 <!-- SPECKIT END -->

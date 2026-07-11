@@ -2,27 +2,11 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents** *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [:package: How to deploy](#package-how-to-deploy)
-  - [Infrastructure provisioning](#infrastructure-provisioning)
-  - [Application deployment](#application-deployment)
-  - [PostgreSQL configuration (production)](#postgresql-configuration-production)
+- [PostgreSQL configuration (production)](#postgresql-configuration-production)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# :package: How to deploy
-
-## Infrastructure provisioning
-
-Terraform can be used to provision AWS resources for your project deployment.
-Read [terraform/README.md](/terraform/README.md) for more information and steps for provisioning resources.
-
-## Application deployment
-
-Use ArgoCD and Kubernetes to automate the deployment of your application to your infrastructure.
-ArgoCD monitors changes within your repository, promptly applying the relevant Kubernetes manifests.
-Read [bootstrap-cluster/README.md](/bootstrap-cluster/README.md) for more details.
-
-## PostgreSQL configuration (production)
+# PostgreSQL configuration (production)
 
 The Django backend uses PostgreSQL as its only database backend in every non-test environment (`config.settings.production`, selected via the `DJANGO_SETTINGS_MODULE` env var).
 There is no SQLite fallback: if PostgreSQL is missing or misconfigured, the application fails fast with an explicit `django.core.exceptions.ImproperlyConfigured` error at startup rather than silently falling back to a local file-based database.

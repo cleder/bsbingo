@@ -1,0 +1,41 @@
+# Build context is the repo root (see backend/Dockerfile). Keep this scoped to
+# what backend/Dockerfile actually needs: pyproject.toml, uv.lock, and backend/.
+
+# VCS / tooling
+.git
+.github
+.specify
+.claude
+.vscode
+.idea
+
+# Docs / specs / infra -- not needed in the backend image
+docs
+specs
+k8s
+terraform
+argocd
+bootstrap-cluster
+Tiltfile
+Taskfile.yml
+*.md
+
+# Frontend -- built as a separate image
+frontend
+node_modules
+
+# Python build artifacts
+**/__pycache__
+**/*.py[cod]
+**/.venv
+**/venv
+**/.pytest_cache
+**/.ruff_cache
+**/*.egg-info
+htmlcov
+db.sqlite3
+
+# Env/secrets -- never bake these into an image
+.envrc*
+.env
+.env.*

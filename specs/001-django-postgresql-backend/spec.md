@@ -94,7 +94,7 @@ As a QA engineer, I want the test suite to run against PostgreSQL or a PostgreSQ
 - **FR-003**: Local development MUST support running the Django project against PostgreSQL and MUST NOT rely on SQLite as the primary development backend.
 - **FR-004**: The project MUST include migration support so database schema changes can be applied to PostgreSQL from the repository.
 - **FR-005**: The test execution environment MUST use PostgreSQL or a PostgreSQL-compatible database, not SQLite, so database-specific behavior is validated accurately.
-- **FR-005**: The project MUST document the PostgreSQL setup steps for both local development and production deployment.
+- **FR-007**: The project MUST document the PostgreSQL setup steps for both local development and production deployment.
 - **FR-006**: The system MUST fail with an explicit PostgreSQL configuration or connection error if PostgreSQL is missing or misconfigured in every non-test runtime environment.
 
 ### Key Entities *(include if feature involves data)*

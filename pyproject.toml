@@ -2,6 +2,7 @@
 test = [
     "deptry>=0.25.1,<0.26.0",
     "hypothesis[django]>=6.156.6",
+    "pytest-cov>=7.0.0",
     "pytest-django>=4.12.0",
     "pytest>=9.1.1",
 ]
@@ -10,14 +11,32 @@ test = [
 dependencies = [
     "django-htmx>=1.27.0",
     "django>=6.0.7",
+    "gunicorn>=23.0.0",
     "psycopg[binary,pool]>=3.3.4",
     "social-auth-app-django>=6.0.0",
+    "uvicorn-worker>=0.4.0",
+    "uvicorn>=0.38.0",
 ]
 description = "Add your description here"
 name = "bsbingo"
 readme = "README.md"
 requires-python = ">=3.14"
 version = "0.1.0"
+
+[tool.pyrefly]
+project-includes = [
+    "**/*.ipynb",
+    "**/*.py*",
+]
+search-path = [
+    "backend",
+]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings.test"
+pythonpath = [
+    "backend",
+]
 
 [tool.ruff]
 extend-exclude = [
@@ -42,6 +61,22 @@ ignore = [
 ]
 select = [
     "ALL",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"backend/tests/**" = [
+    "ANN001",
+    "ANN201",
+    "D100",
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "INP001",
+    "S101",
+]
+"docs/sphinx/conf.py" = [
+    "INP001",
 ]
 
 [tool.uv]
