@@ -1,8 +1,8 @@
 <!--
 Sync Impact Report:
-- Version change: 1.0.0 -> 1.1.0 (Added Strong Typing principle)
+- Version change: 1.0.0 -> 1.1.1 (Added Strong Typing principle and python-socialauth requirement)
 - Modified principles: Added Principle V — Strong Typing & Safe Types
-- Added sections: Strong Typing & Safe Types
+- Added sections: Strong Typing & Safe Types, authentication policy
 - Removed sections: None
 - Templates requiring updates:
   - .specify/templates/tasks-template.md (⚠ pending - add strict typing configuration task)
@@ -56,6 +56,7 @@ We prefer functional programming patterns.
 <!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
 
 The Application is written in `Python` and uses `Django` as the backend framework.
+Authentication uses `python-social-auth` for identity integration and social login flows.
 The frontend is built with `HTMX`.
 Do not introduce any other JavaScript frameworks or libraries; if custom code has to be written for the frontend, it must be written with TypeScript and have 100% test coverage.
 The documentation is built with `MyST` and `Sphinx`.
@@ -77,5 +78,5 @@ Amendments require a version bump and documentation.
 All PRs must verify compliance.
 <!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
 
-**Version**: 1.1.0 | **Ratified**: 2025-12-10 | **Last Amended**: 2026-07-11
+**Version**: 1.1.1 | **Ratified**: 2025-12-10 | **Last Amended**: 2026-07-11
 <!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
