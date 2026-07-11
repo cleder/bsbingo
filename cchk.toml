@@ -1,0 +1,4 @@
+[branch]
+# Spec Kit feature branches use a "NNN-description" naming scheme rather than
+# Conventional Branch types, so that check is disabled for this project.
+conventional_branch = false

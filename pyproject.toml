@@ -1,23 +1,28 @@
+[dependency-groups]
+test = [
+    "deptry>=0.25.1,<0.26.0",
+    "hypothesis[django]>=6.156.6",
+    "pytest-django>=4.12.0",
+    "pytest>=9.1.1",
+]
+
 [project]
-name = "bsbingo"
-version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
-requires-python = ">=3.14"
 dependencies = [
-    "django>=6.0.7",
     "django-htmx>=1.27.0",
+    "django>=6.0.7",
     "psycopg[binary,pool]>=3.3.4",
     "social-auth-app-django>=6.0.0",
 ]
+description = "Add your description here"
+name = "bsbingo"
+readme = "README.md"
+requires-python = ">=3.14"
+version = "0.1.0"
 
-[dependency-groups]
-test = [
-    "hypothesis[django]>=6.156.6",
-    "pytest>=9.1.1",
-    "pytest-django>=4.12.0",
-]
 [tool.ruff]
+extend-exclude = [
+    "tasks.py",
+]
 fix = true
 line-length = 88
 
@@ -38,21 +43,6 @@ ignore = [
 select = [
     "ALL",
 ]
-[tool.rumdl]
-exclude = [
-    ".git",
-    ".github",
-    "build",
-    "dist",
-    "node_modules",
-    "vendor",
-]
-respect-gitignore = true
-
-[tool.rumdl.MD013]
-line-length = 0
-reflow = true
-reflow-mode = "sentence-per-line"
 
 [tool.uv]
 add-bounds = "major"

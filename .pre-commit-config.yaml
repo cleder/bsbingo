@@ -1,32 +1,262 @@
 repos:
+- repo: https://github.com/MarcoGorelli/absolufy-imports
+  rev: v0.3.1
+  hooks:
+  - id: absolufy-imports
+- repo: https://github.com/PyCQA/docformatter
+  rev: v1.7.8
+  hooks:
+  - id: docformatter
+    args:
+    - --in-place
+- repo: https://github.com/Yelp/detect-secrets
+  rev: v1.5.0
+  hooks:
+  - id: detect-secrets
+    args:
+    - --baseline
+    - .secrets.baseline
+- repo: https://github.com/abravalheri/validate-pyproject
+  rev: v0.25
+  hooks:
+  - id: validate-pyproject
+    additional_dependencies:
+    - validate-pyproject-schema-store[all]
+- repo: https://github.com/adamchainz/blacken-docs
+  rev: 1.20.0
+  hooks:
+  - id: blacken-docs
+- repo: https://github.com/amperser/proselint
+  rev: v0.16.0
+  hooks:
+  - id: proselint
+    types:
+    - markdown
+    args:
+    - check
+- repo: https://github.com/antonbabenko/pre-commit-terraform
+  rev: v1.108.0
+  hooks:
+  - id: terraform_docs
+  - id: terraform_fmt
+  - id: terraform_tflint
+  - id: terraform_trivy
+  - id: terraform_validate
+  - id: tfupdate
+- repo: https://github.com/asmeurer/removestar
+  rev: 1.5.2
+  hooks:
+  - id: removestar
+    args:
+    - -i
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.15.21
+  hooks:
+  - id: ruff-check
+  - id: ruff-format
+- repo: https://github.com/astral-sh/ty-pre-commit
+  rev: v0.0.58
+  hooks:
+  - id: ty
+- repo: https://github.com/astral-sh/uv-pre-commit
+  rev: 0.11.28
+  hooks:
+  - id: uv-audit
+    files: ^(uv\.lock|pyproject\.toml)$
+  - id: uv-lock
+  - id: uv-sync
+- repo: https://github.com/bridgecrewio/checkov
+  rev: 3.3.8
+  hooks:
+  - id: checkov_diff
+    args:
+    - --framework
+    - terraform
+    - -f
+- repo: https://github.com/checkmake/checkmake
+  rev: v0.3.2
+  hooks:
+  - id: checkmake
+    language_version: 1.25.0
+- repo: https://github.com/cleder/vercheck
+  rev: 0.4.0
+  hooks:
+  - id: vercheck
+- repo: https://github.com/commit-check/commit-check
+  rev: v2.11.1
+  hooks:
+  - id: check-author-email
+  - id: check-author-name
+  - id: check-branch
+  - id: check-message
+    args:
+    - --subject-imperative=false
+    - --subject-max-length=100
+    - --allow-merge-commits=false
+    stages:
+    - commit-msg
+  - id: check-no-force-push
+- repo: https://github.com/commitizen-tools/commitizen
+  rev: v4.16.4
+  hooks:
+  - id: commitizen
+    stages:
+    - commit-msg
+  - id: commitizen-branch
+- repo: https://github.com/crate-ci/typos
+  rev: v1.48.0
+  hooks:
+  - id: typos
+- repo: https://github.com/dotenv-linter/dotenv-linter
+  rev: v4.0.0
+  hooks:
+  - id: dotenv-linter
+- repo: https://github.com/econchick/interrogate
+  rev: 1.7.0
+  hooks:
+  - id: interrogate
+    exclude: ^tasks\.py$
+    args:
+    - --quiet
+    - --fail-under=70
+- repo: https://github.com/errata-ai/vale
+  rev: v3.15.1
+  hooks:
+  - id: vale
+    language_version: 1.25.7
+- repo: https://github.com/facebook/pyrefly-pre-commit
+  rev: 1.2.0.dev1
+  hooks:
+  - id: pyrefly-check
+    additional_dependencies:
+    - django==6.0.7
+- repo: https://github.com/gitleaks/gitleaks
+  rev: v8.30.1
+  hooks:
+  - id: gitleaks
+    language_version: 1.25.7
+- repo: https://github.com/jorisroovers/gitlint
+  rev: v0.19.1
+  hooks:
+  - id: gitlint
+  - id: gitlint-ci
+- repo: https://github.com/kieran-ryan/pyprojectsort
+  rev: v0.4.0
+  hooks:
+  - id: pyprojectsort
+- repo: https://github.com/lycheeverse/lychee
+  rev: lychee-v0.24.2
+  hooks:
+  - id: lychee
+    args:
+    - LYCHEE_VERSION=0.15.1
+    - --no-progress
+- repo: https://github.com/nim65s/pre-commit-sort
+  rev: v1.0.0
+  hooks:
+  - id: pre-commit-sort
+- repo: https://github.com/openstack/bashate
+  rev: 2.1.1
+  hooks:
+  - id: bashate
+- repo: https://github.com/owenlamont/ryl-pre-commit
+  rev: v0.21.0
+  hooks:
+  - id: ryl
+  - id: ryl-markdown
+- repo: https://github.com/oxipng/oxipng
+  rev: v10.1.1
+  hooks:
+  - id: oxipng
+    args:
+    - -o
+    - '4'
+    - --strip
+    - safe
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.4.0
+  rev: v6.0.0
   hooks:
+  - id: check-added-large-files
+  - id: check-ast
+  - id: check-builtin-literals
   - id: check-case-conflict
+  - id: check-docstring-first
+  - id: check-executables-have-shebangs
+  - id: check-illegal-windows-names
+  - id: check-json
   - id: check-merge-conflict
+  - id: check-shebang-scripts-are-executable
+  - id: check-toml
+  - id: check-vcs-permalinks
+  - id: check-yaml
   - id: debug-statements
-    exclude: ^backend/bsbingo/utils/debugger.py
+  - id: destroyed-symlinks
+  - id: detect-aws-credentials
+    args:
+    - --allow-missing-credentials
   - id: detect-private-key
-
-- repo: https://github.com/psf/black
-  rev: 26.1.0
+  - id: end-of-file-fixer
+  - id: fix-byte-order-marker
+  - id: mixed-line-ending
+  - id: no-commit-to-branch
+  - id: pretty-format-json
+    args:
+    - --autofix
+  - id: trailing-whitespace
+- repo: https://github.com/python-jsonschema/check-jsonschema
+  rev: 0.37.4
   hooks:
-  - id: black
-
-- repo: https://github.com/pycqa/isort
-  rev: 7.0.0
+  - id: check-dependabot
+  - id: check-github-workflows
+  - id: check-metaschema
+  - id: check-taskfile
+- repo: https://github.com/rhysd/actionlint
+  rev: v1.7.12
   hooks:
-  - id: isort
-    args: ["--profile", "black", "--filter-files"]
-
-- repo: https://github.com/charliermarsh/ruff-pre-commit
-  rev: 'v0.12.12'
+  - id: actionlint
+    language_version: 1.25.7
+- repo: https://github.com/rohaquinlop/complexipy-pre-commit
+  rev: v5.1.0
   hooks:
-  - id: ruff
-    args: ["--ignore", "E501"]
-
-- repo: https://github.com/PyCQA/bandit
-  rev: 1.8.6
+  - id: complexipy
+- repo: https://github.com/rvben/rumdl-pre-commit
+  rev: v0.2.30
   hooks:
-  - id: bandit
-    args: ["-ll"]
+  - id: rumdl
+  - id: rumdl-fmt
+- repo: https://github.com/scop/pre-commit-shfmt
+  rev: v3.13.1-1
+  hooks:
+  - id: shfmt
+- repo: https://github.com/shellcheck-py/shellcheck-py
+  rev: v0.11.0.1
+  hooks:
+  - id: shellcheck
+- repo: https://github.com/stackrox/kube-linter
+  rev: v0.8.3
+  hooks:
+  - id: kube-linter
+    language_version: 1.25.7
+- repo: https://github.com/thlorenz/doctoc
+  rev: v2.5.0
+  hooks:
+  - id: doctoc
+- repo: https://github.com/trufflesecurity/truffleHog
+  rev: v3.95.9
+  hooks:
+  - id: trufflehog
+    language_version: 1.25.7
+    args:
+    - --only-verified
+    stages:
+    - pre-commit
+    - pre-push
+- repo: https://github.com/zizmorcore/zizmor-pre-commit
+  rev: v1.26.1
+  hooks:
+  - id: zizmor
+- repo: meta
+  hooks:
+  - id: check-hooks-apply
+  - id: check-useless-excludes
+exclude: ^(\.specify/|\.claude/skills/)

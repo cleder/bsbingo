@@ -70,3 +70,6 @@ env
 # ignore .direnv
 .direnv/
 .envrc
+
+# complexipy cache
+.complexipy_cache/

@@ -3,7 +3,9 @@
 # Global configuration options
 [global]
 # List of rules to disable (uncomment and modify as needed)
-# disable = ["MD013", "MD033"]
+# MD041 is disabled because our doctoc-generated table of contents comment
+# block intentionally precedes the level-1 heading in several docs.
+disable = ["MD041"]
 
 # List of rules to enable exclusively (if provided, only these rules will run)
 # enable = ["MD001", "MD003", "MD004"]
@@ -25,6 +27,10 @@ exclude = [
     "dist",
     "build",
 
+    # Vendored/generated tooling content
+    ".claude/skills",
+    ".specify",
+
     # Specific files or patterns
     "CHANGELOG.md",
     "LICENSE.md",
@@ -42,7 +48,7 @@ respect-gitignore = true
 # [MD003]
 # style = "atx"  # Heading style (atx, atx_closed, setext)
 
-# [MD004]
+[MD004]
 style = "dash"  # Unordered list style (asterisk, plus, dash, consistent)
 
 # [MD007]
@@ -55,4 +61,4 @@ reflow-mode = "sentence-per-line"
 
 [MD044]
 names = ["rumdl", "Markdown", "GitHub", "BsBingo"]  # Proper names that should be capitalized correctly
-code_blocks_excluded = true  # Exclude code blocks from proper name check
+code-blocks-excluded = true  # Exclude code blocks from proper name check
