@@ -23,10 +23,10 @@ loki:
             period: 24h
     storage_config:
       aws:
-        s3: s3://eu-west-1/bsbingo-loki-index-bucket
+        s3: s3://us-east-1/bsbingo-loki-index-bucket
         s3forcepathstyle: true
         bucketnames: bsbingo-loki-index-bucket
-        region: eu-west-1
+        region: us-east-1
         insecure: false
         sse_encryption: false
       boltdb_shipper:

@@ -8,8 +8,6 @@ YELLOW:=$(shell echo "\033[0;33m")
 RED:=$(shell echo "\033[0;31m")
 END:=$(shell echo "\033[0m")
 
-PROJECT_SLUG:="bsbingo"
-
 ## Release/Deployment Targets
 
 ci: test secure build  ## Execute the same checks used in CI/CD
@@ -52,7 +50,8 @@ backend/requirements/production.txt: compile
 backend/requirements/tests.txt: compile
 
 setup:
-	@echo " $(YELLOW)⛭$(END) Checking if the setup is correct and all prerequisites are installed..."
+	cp -n .envrc.example .envrc; \
+	@echo " $(YELLOW)⛭$(END) Checking if the setup is correct and all prerequisites are installed..."; \
 	@MISSING=""; \
 	for exec in $(PREREQUISITE_COMMANDS); do \
 		if ! which $$exec > /dev/null 2>&1; then \
@@ -66,18 +65,18 @@ setup:
 		echo " $(GREEN)✔️$(END) All prerequisites are installed."; \
 	fi
 	@CURRENT_CONTEXT="$$(kubectl config current-context 2>&1)"; \
-	if [ "$$CURRENT_CONTEXT" = "kind-$(PROJECT_SLUG)" ]; then \
-		echo " $(GREEN)✔️$(END) The kubectl context is correctly set to kind-$(PROJECT_SLUG). Run 'tilt up' to start your cluster!"; \
+	if [ "$$CURRENT_CONTEXT" = "kind-bsbingo" ]; then \
+		echo " $(GREEN)✔️$(END) The kubectl context is correctly set to kind-bsbingo. Run 'tilt up' to start your cluster!"; \
 	else \
-		echo " $(YELLOW)⛭$(END) Current kubectl context is not 'kind-$(PROJECT_SLUG)'. Switching context now..."; \
-		if [ -z "$$(kubectl config get-contexts -o name | grep -w 'kind-$(PROJECT_SLUG)$$')" ]; then \
-			echo " $(YELLOW)⛭$(END) No context found for kind-$(PROJECT_SLUG). Creating one. Please wait, this may take a couple of minutes on a slower machine..."; \
-			kind create cluster --name $(PROJECT_SLUG) 1>/dev/null 2>/tmp/scaf_error.log; \
-			echo " $(GREEN)✔️$(END) kind-$(PROJECT_SLUG) cluster and context created."; \
+		echo " $(YELLOW)⛭$(END) Current kubectl context is not 'kind-bsbingo'. Switching context now..."; \
+		if [ -z "$$(kubectl config get-contexts -o name | grep -w 'kind-bsbingo$$')" ]; then \
+			echo " $(YELLOW)⛭$(END) No context found for kind-bsbingo. Creating one. Please wait, this may take a couple of minutes on a slower machine..."; \
+			kind create cluster --name bsbingo 1>/dev/null 2>/tmp/scaf_error.log; \
+			echo " $(GREEN)✔️$(END) kind-bsbingo cluster and context created."; \
 			echo " $(BLUE)🗣️ Remember, you can safely run \"make setup\" any time to switch between Scaf projects.$(END)"; \
 		fi; \
-		kubectl config use-context kind-$(PROJECT_SLUG) 1>/dev/null 2>/tmp/scaf_error.log; \
-		echo " $(GREEN)✔️$(END) Context switched to kind-$(PROJECT_SLUG). Run 'tilt up' to start your cluster! "; \
+		kubectl config use-context kind-bsbingo 1>/dev/null 2>/tmp/scaf_error.log; \
+		echo " $(GREEN)✔️$(END) Context switched to kind-bsbingo. Run 'tilt up' to start your cluster! "; \
 	fi
 
 outdated: ## Show all the outdated packages with their latest versions in the container
@@ -101,9 +100,7 @@ compile-frontend: frontend/package.json ## compile latest frontend dependencies 
 
 init-frontend-dependencies: ## compile initial frontend dependencies to be built into the docker image
 	@docker run --rm --user $(shell id -u):$(shell id -g) -w "/app" -v $(shell pwd)/frontend:/app -e npm_config_cache=/tmp/.npm node:lts /bin/bash -c \
-		"xargs npm install < dependencies-init.txt"
-	@docker run --rm --user $(shell id -u):$(shell id -g) -w "/app" -v $(shell pwd)/frontend:/app -e npm_config_cache=/tmp/.npm node:lts /bin/bash -c \
-		"xargs npm install --save-dev < dependencies-dev-init.txt"
+		"xargs -n 5 npm install"
 
 shell-backend:  ## Shell into the running Django container
 	$(KUBECTL_EXEC_BACKEND)

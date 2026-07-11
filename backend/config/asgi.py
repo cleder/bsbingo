@@ -1,5 +1,5 @@
 """
-ASGI config for BsBingo project.
+ASGI config for BS Bingo project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 

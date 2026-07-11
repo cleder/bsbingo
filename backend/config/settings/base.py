@@ -1,9 +1,10 @@
-"""Base settings to build other settings files upon."""
+"""
+Base settings to build other settings files upon.
+"""
 
 from pathlib import Path
 
 import environ
-import sentry_sdk
 
 ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 # bsbingo/
@@ -23,7 +24,7 @@ DEBUG = env.bool("DJANGO_DEBUG", False)
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # though not all of them may be available with every OS.
 # In Windows, this must be set to your system time zone.
-TIME_ZONE = "UTC"
+TIME_ZONE = "Europe/Dublin"
 # https://docs.djangoproject.com/en/dev/ref/settings/#language-code
 LANGUAGE_CODE = "en-us"
 # https://docs.djangoproject.com/en/dev/ref/settings/#site-id
@@ -226,7 +227,7 @@ EMAIL_TIMEOUT = 5
 # Django Admin URL.
 ADMIN_URL = "admin/"
 # https://docs.djangoproject.com/en/dev/ref/settings/#admins
-ADMINS = [("""Christian Ledermann""", "christian.ledermann@gmail.com")]
+ADMINS = [("""Christian Ledeermann""", "christian.ledeermann@gmail.com")]
 # https://docs.djangoproject.com/en/dev/ref/settings/#managers
 MANAGERS = ADMINS
 
@@ -269,15 +270,6 @@ ACCOUNT_ADAPTER = "bsbingo.users.adapters.AccountAdapter"
 # https://django-allauth.readthedocs.io/en/latest/account/configuration.html
 SOCIALACCOUNT_ADAPTER = "bsbingo.users.adapters.SocialAccountAdapter"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-
-# ------------------------------------------------------------------------------
-# Sentry
-sentry_sdk.init(
-    dsn=env.str("SENTRY_DSN_BACKEND", default=""),
-    environment=env.str("ENVIRONMENT", default="production"),
-    release=env.str("RELEASE", default="dev"),
-)
 
 
 # Your stuff...

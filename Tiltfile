@@ -36,7 +36,7 @@ syncback(
 
 
 
-k8s_resource(workload='backend', port_forwards=8000)
+k8s_resource(workload='backend', port_forwards=[8000, 5678])
 k8s_resource(workload='mailhog', port_forwards=8025)
 k8s_resource(workload='postgres', port_forwards=5432)
 

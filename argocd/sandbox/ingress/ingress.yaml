@@ -11,13 +11,13 @@ spec:
     - websecure
   routes:
     - kind: Rule
-      match: Host(`argocd.sandbox.example.test`)
+      match: Host(`argocd.sandbox.bs-bingo.app`)
       priority: 10
       services:
         - name: argocd-server
           port: 80
     - kind: Rule
-      match: Host(`argocd.sandbox.example.test`) && Headers(`Content-Type`, `application/grpc`)
+      match: Host(`argocd.sandbox.bs-bingo.app`) && Headers(`Content-Type`, `application/grpc`)
       priority: 11
       services:
         - name: argocd-server

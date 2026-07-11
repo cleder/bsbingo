@@ -10,5 +10,3 @@ django-redis
 Pillow
 urllib3
 
-sentry-sdk[django]
-

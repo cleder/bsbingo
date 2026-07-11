@@ -6,8 +6,8 @@ class UsersConfig(AppConfig):
     name = "bsbingo.users"
     verbose_name = _("Users")
 
-    def ready(self) -> None:
+    def ready(self):
         try:
-            import bsbingo.users.signals  # noqa: F401
+            import bsbingo.users.signals  # noqa F401
         except ImportError:
             pass

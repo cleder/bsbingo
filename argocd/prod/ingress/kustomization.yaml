@@ -12,7 +12,7 @@ patches:
     - op: replace
       path: /spec/dnsNames
       value:
-        - argocd.example.test
+        - argocd.bs-bingo.app
   target:
     kind: Certificate
     name: argocd-sandbox-bsbingo-tls
@@ -22,10 +22,10 @@ patches:
       value: argocd-bsbingo
     - op: replace
       path: /spec/routes/0/match
-      value: Host(`argocd.example.test`)
+      value: Host(`argocd.bs-bingo.app`)
     - op: replace
       path: /spec/routes/1/match
-      value: Host(`argocd.example.test`) && Headers(`Content-Type`, `application/grpc`)
+      value: Host(`argocd.bs-bingo.app`) && Headers(`Content-Type`, `application/grpc`)
     - op: replace
       path: /spec/tls
       value: argocd-bsbingo-tls

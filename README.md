@@ -1,8 +1,6 @@
-# BsBingo
+# BS Bingo
 
-BuzzWord bingo
-
-## :information_source: About the BsBingo project
+## :information_source: About the BS Bingo project
 
 * [:telescope: Project overview](/docs/project-overview.md)
 * [:house: Architecture](/docs/architecture.md)

@@ -1,6 +1,5 @@
 # Build all of the dependencies then we will build the actual application image
-FROM python:3.14-slim AS build
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+FROM python:3.13-slim AS build
 
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -8,7 +7,6 @@ ENV BOGUS=1
 
 ARG DEVEL=no
 ARG TEST=no
-ARG APP_DIR=/app
 
 RUN apt-get update \
     && apt-get install --no-install-recommends -y \
@@ -26,49 +24,41 @@ RUN apt-get update \
     postgresql-client-common
 
 
-# # We create an /app directory with a virtual environment in it to store our
-# # application in.
-# RUN set -x \
-#     && python3 -m venv /app
+# We create an /app directory with a virtual environment in it to store our
+# application in.
+RUN set -x \
+    && python3 -m venv /app
 
-# # Now that we've created our virtual environment, we'll go ahead and update
-# # our $PATH to refer to it first.
-# ENV VIRTUAL_ENV="/app"
-# ENV PATH="$VIRTUAL_ENV/bin:${PATH}"
+# Now that we've created our virtual environment, we'll go ahead and update
+# our $PATH to refer to it first.
+ENV VIRTUAL_ENV="/app"
+ENV PATH="$VIRTUAL_ENV/bin:${PATH}"
 
-# # Next, we want to update pip, setuptools, and wheel inside of this virtual
-# # environment to ensure that we have the latest versions of them.
-# RUN pip --no-cache-dir install --upgrade uv
-# RUN uv pip --no-cache install --upgrade setuptools wheel
+# Next, we want to update pip, setuptools, and wheel inside of this virtual
+# environment to ensure that we have the latest versions of them.
+RUN pip --no-cache-dir install --upgrade uv
+RUN uv pip --no-cache install --upgrade setuptools wheel
 
-# COPY requirements /tmp/requirements
+COPY requirements /tmp/requirements
 
-# RUN set -x \
-#     && if [ "$DEVEL" = "yes" ]; then uv pip --no-cache install -r /tmp/requirements/local.txt; fi
+RUN set -x \
+    && if [ "$DEVEL" = "yes" ]; then uv pip --no-cache install -r /tmp/requirements/local.txt; fi
 
-# RUN set -x \
-#     && uv pip --no-cache install --no-deps \
-#     -r /tmp/requirements/production.txt \
-#     -r /tmp/requirements/base.txt
+RUN set -x \
+    && uv pip --no-cache install --no-deps \
+    -r /tmp/requirements/production.txt \
+    -r /tmp/requirements/base.txt
 
-# RUN set -x \
-#     && if [ "$TEST" = "yes" ]; then uv pip --no-cache install --no-deps \
-#     -r /tmp/requirements/tests.txt; fi
-
-WORKDIR $APP_DIR
-
-COPY uv.lock $APP_DIR/uv.lock
-COPY pyproject.toml $APP_DIR/pyproject.toml
-
-RUN --mount=type=cache,target=/root/.cache \
-    uv sync --locked --all-extras
+RUN set -x \
+    && if [ "$TEST" = "yes" ]; then uv pip --no-cache install --no-deps \
+    -r /tmp/requirements/tests.txt; fi
 
 # Now we can build the application image
-FROM python:3.14-slim
+FROM python:3.13-slim
 
 ENV PYTHONUNBUFFERED=1
-ENV PYTHONPATH="/app/.venv"
-ENV PATH="/app/.venv/bin:${PATH}"
+ENV PYTHONPATH="/app"
+ENV PATH="/app/bin:${PATH}"
 ENV BOGUS=1
 
 WORKDIR /app/src

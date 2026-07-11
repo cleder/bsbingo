@@ -9,7 +9,7 @@ spec:
     - websecure
   routes:
     - kind: Rule
-      match: Host(`api.sandbox.example.test`)
+      match: Host(`api.sandbox.bs-bingo.app`)
       priority: 10
       services:
         - name: backend
@@ -29,7 +29,7 @@ spec:
     - websecure
   routes:
     - kind: Rule
-      match: Host(`k8s.sandbox.example.test`)
+      match: Host(`k8s.sandbox.bs-bingo.app`)
       priority: 10
       services:
         - name: backend

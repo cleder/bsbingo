@@ -9,7 +9,7 @@ output "application" {
 
 output "aws_region" {
   description = "AWS Region"
-  value       = "eu-west-1"
+  value       = "us-east-1"
 }
 
 output "aws_profile" {
@@ -22,7 +22,7 @@ output "account_id" {
 }
 
 output "domain_name" {
-  value = "example.test"
+  value = "bs-bingo.app"
 }
 
 output "existing_hosted_zone" {

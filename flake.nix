@@ -1,5 +1,5 @@
 {
-  description = "BsBingo  dev environment";
+  description = "BS Bingo  dev environment";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs";
@@ -48,8 +48,8 @@
             kubernetes-helm
             kubeseal
             nodejs_22
-            nodePackages.eslint
-            nodePackages.prettier
+            eslint
+            prettier
             openssh
             opentofu
             pass
@@ -61,7 +61,7 @@
             yq
           ];
           shellHook = ''
-            echo "BsBingo dev environment shell hook"
+            echo "BS Bingo dev environment shell hook"
             export LC_ALL=en_US.UTF-8
             export LANG=en_US.UTF-8
           '';

@@ -7,7 +7,7 @@ variable "account_id" {
 variable "aws_region" {
   type        = string
   description = "AWS Region"
-  default     = "eu-west-1"
+  default     = "us-east-1"
 }
 
 variable "app_name" {
@@ -30,29 +30,29 @@ variable "cluster_name" {
 
 variable "domain_name" {
   type    = string
-  default = "example.test"
+  default = "bs-bingo.app"
 }
 
 variable "api_domain_name" {
   type    = string
-  default = "api.example.test"
+  default = "api.bs-bingo.app"
 }
 
 variable "cluster_domain_name" {
   type    = string
-  default = "k8s.example.test"
+  default = "k8s.bs-bingo.app"
 }
 
 
 variable "argocd_domain_name" {
   type    = string
-  default = "argocd.example.test"
+  default = "argocd.bs-bingo.app"
 }
 
 
 variable "prometheus_domain_name" {
   type    = string
-  default = "prometheus.example.test"
+  default = "prometheus.bs-bingo.app"
 }
 
 variable "kubernetes_version" {

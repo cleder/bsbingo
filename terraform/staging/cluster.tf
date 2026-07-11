@@ -2,11 +2,11 @@ module "cluster" {
   source                 = "../modules/base"
   environment            = "staging"
   cluster_name           = "bsbingo-staging"
-  domain_name            = "staging.example.test"
-  api_domain_name        = "api.staging.example.test"
-  cluster_domain_name    = "k8s.staging.example.test"
-  argocd_domain_name     = "argocd.staging.example.test"
-  prometheus_domain_name = "prometheus.staging.example.test"
+  domain_name            = "staging.bs-bingo.app"
+  api_domain_name        = "api.staging.bs-bingo.app"
+  cluster_domain_name    = "k8s.staging.bs-bingo.app"
+  argocd_domain_name     = "argocd.staging.bs-bingo.app"
+  prometheus_domain_name = "prometheus.staging.bs-bingo.app"
   existing_hosted_zone   = module.global_variables.existing_hosted_zone
   control_plane = {
     # 2 vCPUs, 4 GiB RAM, $0.0376 per Hour

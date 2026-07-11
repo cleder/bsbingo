@@ -2,11 +2,11 @@ module "cluster" {
   source                 = "../modules/base"
   environment            = "prod"
   cluster_name           = "bsbingo-prod"
-  domain_name            = "prod.example.test"
-  api_domain_name        = "api.prod.example.test"
-  cluster_domain_name    = "k8s.prod.example.test"
-  argocd_domain_name     = "argocd.prod.example.test"
-  prometheus_domain_name = "prometheus.prod.example.test"
+  domain_name            = "prod.bs-bingo.app"
+  api_domain_name        = "api.prod.bs-bingo.app"
+  cluster_domain_name    = "k8s.prod.bs-bingo.app"
+  argocd_domain_name     = "argocd.prod.bs-bingo.app"
+  prometheus_domain_name = "prometheus.prod.bs-bingo.app"
   existing_hosted_zone   = module.global_variables.existing_hosted_zone
   control_plane = {
     # 2 vCPUs, 4 GiB RAM, $0.0376 per Hour

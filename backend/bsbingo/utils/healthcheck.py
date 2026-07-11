@@ -5,8 +5,8 @@ from django.http import HttpResponse, HttpResponseServerError
 logger = logging.getLogger("healthz")
 
 
-class HealthCheckMiddleware:
-    def __init__(self, get_response) -> None:
+class HealthCheckMiddleware(object):
+    def __init__(self, get_response):
         self.get_response = get_response
         # One-time configuration and initialization.
 
@@ -14,15 +14,17 @@ class HealthCheckMiddleware:
         if request.method == "GET":
             if request.path == "/readiness":
                 return self.readiness(request)
-            if request.path == "/healthz":
+            elif request.path == "/healthz":
                 return self.healthz(request)
         return self.get_response(request)
 
-    def healthz(self, request) -> HttpResponse:
-        """Returns that the server is alive."""
+    def healthz(self, request):
+        """
+        Returns that the server is alive.
+        """
         return HttpResponse("OK")
 
-    def readiness(self, request) -> HttpResponse | HttpResponseServerError:
+    def readiness(self, request):
         # Connect to each database and do a generic standard SQL query
         # that doesn't write any data and doesn't depend on any tables
         # being present.

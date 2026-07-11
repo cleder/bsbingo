@@ -8,6 +8,6 @@ spec:
     name: letsencrypt-prod
     kind: ClusterIssuer
   dnsNames:
-    - api.sandbox.example.test
-    - k8s.sandbox.example.test
-    - nextjs.example.test
+    - api.sandbox.bs-bingo.app
+    - k8s.sandbox.bs-bingo.app
+    - nextjs.bs-bingo.app

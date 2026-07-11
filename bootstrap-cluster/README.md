@@ -1,17 +1,21 @@
 # Bootstrap k3s and ArgoCD
 
-After deploying infrastructure using Terraform, we can proceed with configuring k3s and bootstrapping ArgoCD.
+After deploying infrastructure using Terraform, we can proceed with configuring
+k3s and bootstrapping ArgoCD.
 
-Terraform is solely utilized for deploying infrastructure.
-Any subsequent configuration of k3s or ArgoCD is done using Taskfile tasks.
+Terraform is solely utilized for deploying infrastructure. Any subsequent
+configuration of k3s or ArgoCD is done using Taskfile tasks.
 
-To view a list of tasks and their descriptions, navigate to the `bootstrap-cluster` directory and execute `task`.
+To view a list of tasks and their descriptions, navigate to the
+`bootstrap-cluster` directory and execute `task`.
 
-Note that there is a directory for each environment: sandbox, staging, and cluster.
+Note that there is a directory for each environment: sandbox, staging, and
+cluster.
 
-We recommend opening the AWS serial console for each ec2 instance to monitor the bootstrap process.
+We recommend opening the AWS serial console for each ec2 instance to monitor the
+bootstrap process.
 
-## Bootstrapping k3s
+### Bootstrapping k3s
 
 1. Navigate to the directory corresponding to the environment being set up and
    run:
@@ -24,13 +28,12 @@ We recommend opening the AWS serial console for each ec2 instance to monitor the
 2. Review the `.env` file for the given environment:
 
    ```shell
-   CONTROL_PLANE_ENDPOINT: "https://k8s.sandbox.example.test:6443"
+   CONTROL_PLANE_ENDPOINT: "https://k8s.sandbox.bs-bingo.app:6443"
    CLUSTER_NAME: "bsbingo-sandbox"
    ```
-
 3. Bootstrap k3s with the following command:
 
-   ```text
+   ```
    task k3s:bootstrap
    ```
 
@@ -51,9 +54,11 @@ We recommend opening the AWS serial console for each ec2 instance to monitor the
        - task: enable-ecr-credential-helper
    ```
 
-   It takes a few minutes for the cluster nodes to register as etcd members and synchronize.
+   It takes a few minutes for the cluster nodes to register as etcd
+   members and synchronize.
 
-   If the cluster fails to bootstrap, refer to the Troubleshooting section below.
+   If the cluster fails to bootstrap, refer to the Troubleshooting section
+   below.
 
 4. Test kubectl access:
 
@@ -66,21 +71,24 @@ We recommend opening the AWS serial console for each ec2 instance to monitor the
 
    ```shell
    $ kubectl cluster-info
-   Kubernetes control plane is running at https://k8s.sandbox.example.test:6443
-   CoreDNS is running at https://k8s.sandbox.example.test:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+   Kubernetes control plane is running at https://k8s.sandbox.bs-bingo.app:6443
+   CoreDNS is running at https://k8s.sandbox.bs-bingo.app:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
 
    To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
    ```
 
 ### Bootstrapping ArgoCD
 
-1. Review the branches used for deployment to the sandbox, staging and production environments.
-   The default configuration will release the `develop` branch to the Sandbox and the `main` branch to the Production environment.
-   Make sure to make the `develop` branch the default branch for PRs on a newly created Git repository.
+1. Review the branches used for deployment to the sandbox, staging and
+   production environments. The default configuration will release the `develop`
+   branch to the Sandbox and the `main` branch to the Production environment.
+   Make sure to make the `develop` branch the default branch for PRs on a newly
+   created Git repository.
 
-   Review the branch rule in `bootstrap_root_app` job in `bootstrap-cluster/argocd.yaml`:
+   Review the branch rule in `bootstrap_root_app` job in
+   `bootstrap-cluster/argocd.yaml`:
 
-   ```text
+   ```
    vars:
      BRANCH:
        sh: ([ "$ENV" = "production" ] && echo "main" || echo "develop")
@@ -90,7 +98,7 @@ We recommend opening the AWS serial console for each ec2 instance to monitor the
 
    `argocd/sandbox/apps/kustomization.yaml`:
 
-   ```text
+   ```
    patches:
    - patch: |-
        - op: replace
@@ -111,7 +119,7 @@ We recommend opening the AWS serial console for each ec2 instance to monitor the
 
    `argocd/prod/apps/kustomization.yaml`:
 
-   ```text
+   ```
    patches:
    - patch: |-
        - op: replace
@@ -122,15 +130,16 @@ We recommend opening the AWS serial console for each ec2 instance to monitor the
        name: ingress
    ```
 
-2. Next, we need to create a GitHub deploy key to allow ArgoCD to monitor the repo.
-   This step requires access to the 1password vault for your project.
+2. Next, we need to create a GitHub deploy key to allow ArgoCD to monitor the
+   repo. This step requires access to the 1password vault for your project.
 
-   Review the vault name in the `op` cli command in `bootstrap-cluster/argocd.yaml`:
+   Review the vault name in the `op` cli command in
+   `bootstrap-cluster/argocd.yaml`:
 
-   ```text
+   ```
       - op item create
           ...
-          --vault='BsBingo'
+          --vault='BS Bingo'
    ```
 
    Sign into 1password with `op signin` and generate the deploy key:
@@ -149,7 +158,7 @@ We recommend opening the AWS serial console for each ec2 instance to monitor the
 
 The `argocd:bootstrap` task configuration is as follows:
 
-```text
+```
   bootstrap:
       desc: Setup ArgoCD
       cmds:
@@ -158,8 +167,8 @@ The `argocd:bootstrap` task configuration is as follows:
         - task: bootstrap_root_app
 ```
 
-1. ArgoCD will install the Sealed Secrets operator in the cluster.
-   Once it is installed, we can generate secrets for the given environment.
+5. ArgoCD will install the Sealed Secrets operator in the cluster. Once it is
+   installed, we can generate secrets for the given environment.
 
    ```shell
    cd ..
@@ -167,12 +176,12 @@ The `argocd:bootstrap` task configuration is as follows:
    make $ENV-secrets
    ```
 
-2. Commit the `secrets.yaml` file for the given environment and push it to the
+6. Commit the `secrets.yaml` file for the given environment and push it to the
    repo.
 
 ## Troubleshooting
-
-If bootstrapping k3s fails, we recommend uninstalling k3s from each node and bootstrapping from scratch.
+If bootstrapping k3s fails, we recommend uninstalling k3s from each node and
+boostrapping from scratch.
 
 ```shell
 task k3s:uninstall-k3s

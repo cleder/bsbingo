@@ -1,7 +1,6 @@
 # :telescope: Project Overview
 
-This project template provides a full-stack application scaffold with integrated deployment tooling.
-It's designed to quickly bootstrap new projects with a standardized architecture and best practices.
+This project template provides a full-stack application scaffold with integrated deployment tooling. It's designed to quickly bootstrap new projects with a standardized architecture and best practices.
 
 ## Purpose
 
@@ -38,38 +37,38 @@ flowchart LR
         GraphQL
         TailwindCSS
         Vitest"]
-
+        
         Backend["Backend
         Django
         GraphQL
         Celery
         Redis
         PostgreSQL"]
-
+        
         Infrastructure["Infrastructure
         Kubernetes
         Docker
         ArgoCD
         Terraform"]
-
+        
         DevOps["DevOps
         CI/CD
         GitOps
         Secrets Management"]
     end
-
+    
     %% Style definitions - Gruvbox Dark theme
     classDef frontend fill:#d79921,stroke:#b57614,stroke-width:2px,color:#282828,font-weight:bold
     classDef backend fill:#689d6a,stroke:#427b58,stroke-width:2px,color:#282828,font-weight:bold
     classDef infra fill:#458588,stroke:#076678,stroke-width:2px,color:#282828,font-weight:bold
     classDef devops fill:#cc241d,stroke:#9d0006,stroke-width:2px,color:#282828,font-weight:bold
-
+    
     %% Apply styles
     class Frontend frontend
     class Backend backend
     class Infrastructure infra
     class DevOps devops
-
+    
     %% Explicit styling for subgraph titles - works in both light and dark modes
     style Temp fill:#282828,color:#fabd2f,font-weight:bold
 ```
@@ -97,7 +96,7 @@ For more details on the architecture, see the [Architecture Documentation](./arc
 
 ## Key Features
 
-- HTMX Frontend
+- Next.js frontend with TypeScript and GraphQL integration
 - Django backend with GraphQL API
 - Celery for background task processing
 - Kubernetes manifests for deployment

@@ -40,7 +40,7 @@ else:
 
 def remove_celery_files():
     file_names = [
-        os.path.join("backend", "bsbingo", "celery.py"),
+        os.path.join("backend", "bsbingo", "celery_app.py"),
         os.path.join("backend", "bsbingo", "users", "tasks.py"),
         os.path.join(
             "backend",
@@ -238,9 +238,7 @@ def party_popper():
 
 
 def run_setup():
-    subprocess.run(
-        shlex.split("kind create cluster --name bsbingo"), check=True
-    )
+    subprocess.run(shlex.split("kind create cluster --name bsbingo"), check=True)
     subprocess.run(shlex.split("make compile"), check=True)
 
     print("Dependencies compiled successfully.")
@@ -262,12 +260,13 @@ def main():
     if "github.com" != "github.com":
         remove_github_files()
 
-    if "True" == "False":
+    if "False" == "False":
         remove_sentry_files()
 
     if "False" == "False":
         remove_graphql_files()
 
+    # Format code using black and isort (versions should match .pre-commit-config.yaml)
     subprocess.run(shlex.split("black ./backend"), check=True)
     subprocess.run(shlex.split("isort --profile=black ./backend"), check=True)
 

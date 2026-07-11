@@ -2,7 +2,7 @@ version: '3'
 silent: true
 
 env:
-  GITHUB_DEPLOY_KEY_TITLE: "BsBingo ArgoCD GitHub Deploy Key"
+  GITHUB_DEPLOY_KEY_TITLE: "BS Bingo ArgoCD GitHub Deploy Key"
 
 tasks:
   generate_github_deploy_key:

@@ -1,19 +1,19 @@
 # Changes here will be overwritten by Copier
-_commit: v1.11.1
+_commit: v1.15.0
 _src_path: https://github.com/sixfeetup/scaf-fullstack-template.git
-copier__author_name: Christian Ledermann
+copier__author_name: Christian Ledeermann
 copier__aws_account_id: '000000000000'
-copier__aws_region: eu-west-1
+copier__aws_region: us-east-1
 copier__create_nextjs_frontend: false
-copier__description: BS/Buzzword Bingo!
-copier__domain_name: example.test
-copier__email: christian.ledermann@gmail.com
+copier__description: BS Bingo
+copier__domain_name: bs-bingo.app
+copier__email: christian.ledeermann@gmail.com
 copier__existing_hosted_zone: ''
 copier__operating_system: k3s
-copier__project_name_raw: BsBingo
+copier__project_name_raw: BS Bingo
 copier__project_slug: bsbingo
 copier__repo_url: git@github.com:cleder/bsbingo.git
-copier__timezone: UTC
+copier__timezone: Europe/Dublin
 copier__use_celery: false
-copier__use_sentry: true
+copier__use_sentry: false
 copier__version: 0.1.0

@@ -18,8 +18,8 @@ patches:
     - op: replace
       path: /spec/dnsNames
       value:
-        - api.example.test
-        - k8s.example.test
+        - api.bs-bingo.app
+        - k8s.bs-bingo.app
   target:
     kind: Certificate
     name: cluster-cert
@@ -29,7 +29,7 @@ patches:
       value: letsencrypt-prod
     - op: replace
       path: /spec/routes/0/match
-      value: Host(`api.example.test`)
+      value: Host(`api.bs-bingo.app`)
   target:
     kind: IngressRoute
     name: backend-ingress
@@ -39,7 +39,7 @@ patches:
       value: letsencrypt-prod
     - op: replace
       path: /spec/routes/0/match
-      value: Host(`k8s.example.test`)
+      value: Host(`k8s.bs-bingo.app`)
   target:
     kind: IngressRoute
     name: k8s-ingress
@@ -58,11 +58,11 @@ configMapGenerator:
     literals:
      - ENVIRONMENT="production"
      - DJANGO_SETTINGS_MODULE="config.settings.production"
-     - DJANGO_CSRF_TRUSTED_ORIGINS="https://example.test"
-     - AWS_S3_CUSTOM_DOMAIN="example.test"
+     - DJANGO_CSRF_TRUSTED_ORIGINS="https://bs-bingo.app"
+     - AWS_S3_CUSTOM_DOMAIN="bs-bingo.app"
 
 images:
-  - name: 000000000000.dkr.ecr.eu-west-1.amazonaws.com/bsbingo-sandbox-backend
-    newName: 000000000000.dkr.ecr.eu-west-1.amazonaws.com/bsbingo-backend
+  - name: 000000000000.dkr.ecr.us-east-1.amazonaws.com/bsbingo-sandbox-backend
+    newName: 000000000000.dkr.ecr.us-east-1.amazonaws.com/bsbingo-backend
     newTag: latest
 
