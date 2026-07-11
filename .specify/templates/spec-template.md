@@ -88,7 +88,8 @@
 - **FR-002**: System MUST [specific capability, e.g., "validate email addresses"]
 - **FR-003**: Users MUST be able to [key interaction, e.g., "reset their password"]
 - **FR-004**: System MUST [data requirement, e.g., "persist user preferences"]
-- **FR-005**: System MUST [behavior, e.g., "log all security events"]
+- **FR-005**: System MUST make illegal states unrepresentable through strict static typing and explicit domain types.
+- **FR-006**: System MUST [behavior, e.g., "log all security events"]
 
 *Example of marking unclear requirements:*
 
