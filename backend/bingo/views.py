@@ -9,7 +9,6 @@ from django.db import transaction
 from django.http import (
     HttpRequest,
     HttpResponse,
-    HttpResponseForbidden,
     HttpResponseNotAllowed,
     HttpResponseRedirect,
 )
@@ -17,7 +16,12 @@ from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 from django.urls import reverse
 
-from bingo.domain import InsufficientBuzzwordPoolError, has_bingo, select_random_words
+from bingo.domain import (
+    BOARD_WORD_COUNT,
+    InsufficientBuzzwordPoolError,
+    select_random_words,
+    winning_lines,
+)
 from bingo.forms import DisplayNameForm, GameNameForm
 from bingo.models import Board, BoardSquare, Buzzword, Game, GameStatus, Player
 
@@ -27,7 +31,6 @@ if TYPE_CHECKING:
     from django.db.models.query import QuerySet
 
 CENTER_POSITION = 12
-BOARD_WORD_COUNT = 24
 
 
 class _HomeContext(TypedDict):
@@ -35,6 +38,7 @@ class _HomeContext(TypedDict):
 
     form: GameNameForm
     game: NotRequired[Game]
+    join_url: NotRequired[str]
 
 
 class _JoinContext(TypedDict):
@@ -52,18 +56,25 @@ class _BoardContext(TypedDict):
     board: Board
     squares: QuerySet[BoardSquare]
     game: Game
+    is_winner: bool
+    is_readonly: bool
+    winning_positions: frozenset[int]
 
 
 class _SquareContext(TypedDict):
     """Template context for `bingo/partials/_square.html`."""
 
     square: BoardSquare
+    winning_positions: frozenset[int]
+    is_readonly: bool
+    oob: NotRequired[bool]
 
 
 class _WinnerBannerContext(TypedDict):
     """Template context for `bingo/partials/_winner_banner.html`."""
 
     game: Game
+    is_winner: bool
 
 
 def create_game(request: HttpRequest) -> HttpResponse:
@@ -72,7 +83,14 @@ def create_game(request: HttpRequest) -> HttpResponse:
         form = GameNameForm(request.POST)
         if form.is_valid():
             game: Game = Game.objects.create(name=form.cleaned_data["name"])
-            context: _HomeContext = {"form": GameNameForm(), "game": game}
+            join_url = request.build_absolute_uri(
+                reverse("bingo:join_game", args=[game.id]),
+            )
+            context: _HomeContext = {
+                "form": GameNameForm(),
+                "game": game,
+                "join_url": join_url,
+            }
             return render(request, "bingo/home.html", context)
     else:
         form = GameNameForm()
@@ -151,18 +169,98 @@ def join_game(request: HttpRequest, game_id: UUID) -> HttpResponse:
 
 
 def view_board(request: HttpRequest, board_id: UUID) -> HttpResponse:
-    """Render one participant's board (FR-012)."""
+    """Render one participant's board (FR-005-009, FR-015-016)."""
     board: Board = get_object_or_404(Board, pk=board_id)
-    squares: QuerySet[BoardSquare] = BoardSquare.objects.filter(board=board).order_by(
-        "position"
+    squares: QuerySet[BoardSquare] = (
+        BoardSquare.objects.filter(board=board)
+        .select_related("buzzword")
+        .order_by("position")
     )
     game: Game = board.player.game
-    context: _BoardContext = {"board": board, "squares": squares, "game": game}
+    is_readonly = game.status == GameStatus.FINISHED
+    is_winner = is_readonly and game.winner == board.player
+    winning_positions = (
+        winning_lines(
+            frozenset(
+                squares.filter(marked=True).values_list("position", flat=True),
+            ),
+        )
+        if is_winner
+        else frozenset()
+    )
+    context: _BoardContext = {
+        "board": board,
+        "squares": squares,
+        "game": game,
+        "is_winner": is_winner,
+        "is_readonly": is_readonly,
+        "winning_positions": winning_positions,
+    }
     return render(request, "bingo/board.html", context)
 
 
+def _finished_board_response(
+    request: HttpRequest,
+    board: Board,
+    game: Game,
+    clicked_square: BoardSquare,
+) -> HttpResponse:
+    """
+    Render the read-only board and finished/winner banner for one participant.
+
+    Shared by "this tap arrived after the game already ended" and "this
+    tap just completed the winning line", so `is_winner` is always
+    derived from the authoritative `game.winner` (never assumed), and
+    both callers deliver the full-board read-only OOB swap (FR-016), not
+    just the tapped cell.
+    """
+    is_winner = game.winner == board.player
+    marked_positions = (
+        frozenset(
+            BoardSquare.objects.filter(board=board, marked=True).values_list(
+                "position",
+                flat=True,
+            ),
+        )
+        if is_winner
+        else frozenset()
+    )
+    winners = winning_lines(marked_positions) if is_winner else frozenset()
+
+    clicked_fragment = render_to_string(
+        "bingo/partials/_square.html",
+        _SquareContext(
+            square=clicked_square,
+            winning_positions=winners,
+            is_readonly=True,
+        ),
+        request=request,
+    )
+    other_fragments = "".join(
+        render_to_string(
+            "bingo/partials/_square.html",
+            _SquareContext(
+                square=other,
+                winning_positions=winners,
+                is_readonly=True,
+                oob=True,
+            ),
+            request=request,
+        )
+        for other in BoardSquare.objects.filter(board=board)
+        .select_related("buzzword")
+        .exclude(pk=clicked_square.pk)
+    )
+    banner_fragment = render_to_string(
+        "bingo/partials/_winner_banner.html",
+        _WinnerBannerContext(game=game, is_winner=is_winner),
+        request=request,
+    )
+    return HttpResponse(clicked_fragment + other_fragments + banner_fragment)
+
+
 def toggle_cell(request: HttpRequest, board_id: UUID, cell_id: UUID) -> HttpResponse:
-    """Toggle one square and detect a winning line (FR-008 through FR-011)."""
+    """Toggle one square and detect a winning line (FR-008-011, FR-015-016)."""
     if request.method != "POST":
         return HttpResponseNotAllowed(["POST"])
 
@@ -171,18 +269,17 @@ def toggle_cell(request: HttpRequest, board_id: UUID, cell_id: UUID) -> HttpResp
     game: Game = board.player.game
 
     if game.status == GameStatus.FINISHED:
-        square_fragment = render_to_string(
-            "bingo/partials/_square.html",
-            _SquareContext(square=square),
-            request=request,
-        )
-        return HttpResponseForbidden(square_fragment)
+        return _finished_board_response(request, board, game, square)
 
     if square.position == CENTER_POSITION:
         return render(
             request,
             "bingo/partials/_square.html",
-            _SquareContext(square=square),
+            _SquareContext(
+                square=square,
+                winning_positions=frozenset(),
+                is_readonly=False,
+            ),
         )
 
     square.marked = not square.marked
@@ -194,14 +291,18 @@ def toggle_cell(request: HttpRequest, board_id: UUID, cell_id: UUID) -> HttpResp
             flat=True,
         ),
     )
+    game_now_finished = bool(winning_lines(marked_positions))
 
-    square_fragment = render_to_string(
-        "bingo/partials/_square.html",
-        _SquareContext(square=square),
-        request=request,
-    )
-
-    if not has_bingo(marked_positions):
+    if not game_now_finished:
+        square_fragment = render_to_string(
+            "bingo/partials/_square.html",
+            _SquareContext(
+                square=square,
+                winning_positions=frozenset(),
+                is_readonly=False,
+            ),
+            request=request,
+        )
         return HttpResponse(square_fragment)
 
     Game.objects.filter(pk=game.id, status=GameStatus.ACTIVE).update(
@@ -209,10 +310,4 @@ def toggle_cell(request: HttpRequest, board_id: UUID, cell_id: UUID) -> HttpResp
         winner=board.player,
     )
     game.refresh_from_db()
-
-    banner_fragment = render_to_string(
-        "bingo/partials/_winner_banner.html",
-        _WinnerBannerContext(game=game),
-        request=request,
-    )
-    return HttpResponse(square_fragment + banner_fragment)
+    return _finished_board_response(request, board, game, square)

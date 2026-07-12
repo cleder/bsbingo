@@ -70,6 +70,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.csrf",
             ],
         },
     },
@@ -148,6 +149,13 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = "static/"
+
+# `frontend/src/copy-link.ts` is compiled to `frontend/dist/copy-link.js` by
+# `tsc` (see `frontend/package.json`'s `build` script); this entry lets
+# `{% static "copy-link.js" %}` serve that compiled output directly, so the
+# script is authored once in `frontend/` with no build artifact checked into
+# `backend/` (research.md).
+STATICFILES_DIRS = [BASE_DIR.parent / "frontend" / "dist"]
 
 AUTHENTICATION_BACKENDS = (
     "social_core.backends.google.GoogleOAuth2",

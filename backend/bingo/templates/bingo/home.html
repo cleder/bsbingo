@@ -1,20 +1,52 @@
 {% extends "bingo/base.html" %}
+{% load static %}
 
 {% block title %}Create a Game — Buzzword Bingo{% endblock %}
 
+{% block extra_head %}
+<script type="module">
+  import { initCopyLink } from "{% static 'copy-link.js' %}";
+  initCopyLink(document, navigator);
+</script>
+{% endblock %}
+
 {% block content %}
-<h1>Create a Buzzword Bingo game</h1>
+<main class="page page-home">
+    <h1>Buzzword Bingo</h1>
 
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Create game</button>
-</form>
-
-{% if game %}
-    <p>
-        Game "{{ game.name }}" created! Share this link with participants:
-        <a href="{% url 'bingo:join_game' game.id %}">{% url 'bingo:join_game' game.id %}</a>
-    </p>
-{% endif %}
+    {% if game %}
+        <section class="card share-card" data-testid="share-screen">
+            <h2>Game Created <span aria-hidden="true">🎉</span></h2>
+            <p>Share this link with players:</p>
+            <p class="share-link-row">
+                <a href="{{ join_url }}"
+                   data-testid="share-link"
+                   data-share-link="{{ join_url }}">{{ join_url }}</a>
+            </p>
+            <button type="button" class="btn btn-primary" data-testid="copy-link-button">Copy Link</button>
+            <p role="status" data-testid="copy-status" class="status-message"></p>
+            <p><a data-testid="create-another-game" href="{% url 'bingo:create_game' %}">Create another game</a></p>
+        </section>
+    {% else %}
+        <section class="card">
+            <h2>Create a new game</h2>
+            <form method="post" class="form" novalidate>
+                {% csrf_token %}
+                <label for="{{ form.name.id_for_label }}">Game Name</label>
+                <input type="text"
+                       name="{{ form.name.html_name }}"
+                       id="{{ form.name.id_for_label }}"
+                       value="{{ form.name.value|default:'' }}"
+                       autofocus
+                       autocomplete="off"
+                       class="text-input"
+                       data-testid="game-name-input">
+                {% if form.name.errors %}
+                    <p role="alert" class="field-error">{{ form.name.errors.0 }}</p>
+                {% endif %}
+                <button type="submit" class="btn btn-primary" data-testid="create-game-submit">Create Game</button>
+            </form>
+        </section>
+    {% endif %}
+</main>
 {% endblock %}

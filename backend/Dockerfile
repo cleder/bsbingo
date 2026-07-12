@@ -26,6 +26,21 @@ ARG TEST=no
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-install-project $(if [ "$TEST" = "yes" ]; then echo --group test; fi)
 
+# Compiles the one custom TypeScript module (frontend/src/*.ts) to
+# frontend/dist/*.js, served by Django's STATICFILES_DIRS at
+# `BASE_DIR.parent / "frontend" / "dist"` (== /app/frontend/dist below --
+# BASE_DIR is /app/src, since backend/ is copied there).
+FROM node:lts-slim AS frontend-build
+
+WORKDIR /frontend
+
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci
+
+COPY frontend/tsconfig.json ./
+COPY frontend/src ./src
+RUN npm run build
+
 # Application image
 FROM python:3.14-slim
 
@@ -40,6 +55,7 @@ RUN adduser --system --no-create-home django
 
 COPY --chown=django:django --from=build /app /app
 COPY --chown=django:django backend/ /app/src/
+COPY --chown=django:django --from=frontend-build /frontend/dist /app/frontend/dist
 
 USER django
 

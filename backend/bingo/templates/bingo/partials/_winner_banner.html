@@ -1,3 +1,15 @@
 <div id="winner-banner" role="status" aria-live="polite" hx-swap-oob="true">
-    {% if game.winner %}🎉 {{ game.winner.name }} wins!{% endif %}
+    {% if game.winner %}
+        {% if is_winner %}
+            <input type="checkbox" id="celebrate-checkbox" class="sr-only celebrate-checkbox">
+            <div class="winner-overlay" data-testid="winner-overlay">
+                <h2><span aria-hidden="true">🎉</span> BINGO! <span aria-hidden="true">🎉</span></h2>
+                <p>Congratulations!</p>
+                <p>You completed a winning line.</p>
+                <label for="celebrate-checkbox" class="btn btn-primary" data-testid="celebrate-dismiss">Celebrate</label>
+            </div>
+        {% else %}
+            <p>Game Finished. Winner: {{ game.winner.name }}. Thanks for playing!</p>
+        {% endif %}
+    {% endif %}
 </div>

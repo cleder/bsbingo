@@ -3,13 +3,27 @@
 {% block title %}Your Board — Buzzword Bingo{% endblock %}
 
 {% block content %}
-<h1>Your Bingo Board</h1>
+<main class="page page-board">
+    <header class="board-header">
+        <h1 data-testid="game-name">{{ game.name }}</h1>
+        <p>Player: <span data-testid="player-name">{{ board.player.name }}</span></p>
+        <p class="win-condition">Bingo when you complete a row, column or diagonal.</p>
+    </header>
 
-{% include "bingo/partials/_winner_banner.html" %}
+    {% include "bingo/partials/_winner_banner.html" %}
 
-<div class="board">
-    {% for square in squares %}
-        {% include "bingo/partials/_square.html" %}
-    {% endfor %}
-</div>
+    <div class="board"
+         role="grid"
+         aria-label="Bingo board"
+         {% if is_readonly %}data-testid="board-readonly"{% endif %}>
+        {% for square in squares %}
+            {% if forloop.counter0|divisibleby:5 %}
+                {% if not forloop.first %}</div>{% endif %}
+                <div class="board-row" role="row">
+            {% endif %}
+            {% include "bingo/partials/_square.html" %}
+            {% if forloop.last %}</div>{% endif %}
+        {% endfor %}
+    </div>
+</main>
 {% endblock %}

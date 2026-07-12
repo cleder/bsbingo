@@ -1,11 +1,37 @@
-<!DOCTYPE html>
+{% load static %}<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Buzzword Bingo{% endblock %}</title>
+    <script>
+      // Applies any previously-chosen theme before first paint, so the page
+      // never flashes the wrong theme. Deliberately tiny/inline -- deferring
+      // this to the module below would repaint visibly after load.
+      (function () {
+        try {
+          var theme = localStorage.getItem('bingo-theme');
+          if (theme === 'light' || theme === 'dark') {
+            document.documentElement.setAttribute('data-theme', theme);
+          }
+        } catch (e) {
+          /* localStorage unavailable (e.g. private browsing) -- fall back to prefers-color-scheme */
+        }
+      })();
+    </script>
+    <link rel="stylesheet" href="{% static 'bingo/css/bingo.css' %}">
     <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <script type="module">
+      import { initThemeToggle } from "{% static 'theme-toggle.js' %}";
+      initThemeToggle(document, localStorage);
+    </script>
+    {% block extra_head %}{% endblock %}
 </head>
-<body>
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+<button type="button" class="theme-toggle" data-testid="theme-toggle" aria-pressed="false">
+    <span aria-hidden="true">🌓</span>
+    <span class="sr-only">Toggle dark mode</span>
+</button>
 {% block content %}{% endblock %}
 </body>
 </html>

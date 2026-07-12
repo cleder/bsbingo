@@ -1,8 +1,19 @@
 <button type="button"
         id="square-{{ square.id }}"
         class="square{% if square.marked %} marked{% endif %}"
+        role="gridcell"
+        aria-selected="{% if square.marked %}true{% else %}false{% endif %}"
+        data-testid="{% if square.position == 12 %}free-space{% else %}cell-{{ square.position }}{% endif %}"
+        {% if square.position in winning_positions %}data-winning-line="true"{% endif %}
+        {% if oob %}hx-swap-oob="true"{% endif %}
+        {% if square.position == 12 or is_readonly %}
+        disabled
+        {% else %}
         hx-post="{% url 'bingo:toggle_cell' square.board_id square.id %}"
         hx-target="this"
-        hx-swap="outerHTML">
+        hx-swap="outerHTML transition:true"
+        hx-indicator="this"
+        hx-disabled-elt="this"
+        {% endif %}>
     {% if square.buzzword %}{{ square.buzzword.text }}{% else %}FREE{% endif %}
 </button>
