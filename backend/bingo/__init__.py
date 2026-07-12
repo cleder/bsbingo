@@ -1,1 +1,1 @@
-"""Bingo app (scaffolded, not yet wired into INSTALLED_APPS)."""
+"""Bingo app: the buzzword bingo gameplay implementation."""

@@ -159,6 +159,10 @@ class BoardSquare(models.Model):
                 fields=("board", "position"),
                 name="unique_board_position",
             ),
+            models.CheckConstraint(
+                condition=models.Q(position__gte=0, position__lte=24),
+                name="position_range",
+            ),
         )
         ordering = ("position",)
 

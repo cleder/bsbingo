@@ -7,3 +7,7 @@ exclude = [
     "^https?://127\\.0\\.0\\.1",
     "^https?://([a-zA-Z0-9-]+\\.)?bs-bingo\\.app",
 ]
+
+# Django templates mix `{% %}`/`{{ }}` template syntax into href/src attributes
+# (e.g. `{% url 'name' arg %}`) that isn't a real link until rendered server-side.
+exclude_path = ["backend/bingo/templates"]

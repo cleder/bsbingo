@@ -113,4 +113,3 @@ resource "aws_iam_role_policy_attachment" "amazon_ses_policy_attachment" {
   role       = aws_iam_role.ec2_role.name
   policy_arn = aws_iam_policy.amazon_ses_policy.arn
 }
-

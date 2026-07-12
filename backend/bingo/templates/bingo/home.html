@@ -14,7 +14,7 @@
 {% if game %}
     <p>
         Game "{{ game.name }}" created! Share this link with participants:
-        <a href="/game/{{ game.id }}/join/">/game/{{ game.id }}/join/</a>
+        <a href="{% url 'bingo:join_game' game.id %}">{% url 'bingo:join_game' game.id %}</a>
     </p>
 {% endif %}
 {% endblock %}

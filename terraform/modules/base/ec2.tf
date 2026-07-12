@@ -55,4 +55,3 @@ module "control_plane_nodes" {
   ]
 
 }
-

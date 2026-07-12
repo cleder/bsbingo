@@ -2,9 +2,9 @@
 ASGI config for the Bullshit Bingo project.
 
 It exposes the ASGI callable as a module-level variable named
-``application``. Sandbox/production already invoke this module directly
-via ``daphne ... config.asgi:application`` (see
-``k8s/sandbox/kustomization.yaml``).
+``application``. The sandbox overlay invokes this module via Gunicorn
+with the Uvicorn worker class (``gunicorn config.asgi:application -k
+uvicorn_worker.UvicornWorker``; see ``k8s/sandbox/kustomization.yaml``).
 """
 
 import os

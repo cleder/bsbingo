@@ -1,10 +1,16 @@
 """Integration tests for the bingo app's player-facing HTTP endpoints."""
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 from uuid import uuid4
 
 import pytest
 from bingo.models import Board, BoardSquare, Buzzword, Game, GameStatus, Player
 from django.urls import reverse
+
+if TYPE_CHECKING:
+    from django.db.models import QuerySet
 
 CENTER_POSITION = 12
 
@@ -114,6 +120,43 @@ def test_join_finished_game_creates_nothing_and_shows_message(client, buzzword_p
 
     assert response.status_code == 200
     assert not Player.objects.filter(game=finished_game).exists()
+    assert b"no longer accepting participants" in response.content.lower()
+
+
+@pytest.mark.django_db
+def test_join_finished_between_initial_check_and_lock_is_rejected(
+    monkeypatch,
+    client,
+    buzzword_pool,
+    active_game,
+):
+    """
+    Simulate FR-005's race window.
+
+    Another request finishes the game after `join_game`'s initial
+    (unlocked) status check but before its `select_for_update()` re-
+    check inside the transaction. Without the re-check, this would
+    create a `Player`/`Board` for a finished game.
+    """
+    real_select_for_update = Game.objects.select_for_update
+
+    def select_for_update_after_concurrent_finish() -> QuerySet[Game]:
+        Game.objects.filter(pk=active_game.id).update(status=GameStatus.FINISHED)
+        return real_select_for_update()
+
+    monkeypatch.setattr(
+        Game.objects,
+        "select_for_update",
+        select_for_update_after_concurrent_finish,
+    )
+
+    response = client.post(
+        reverse("bingo:join_game", args=[active_game.id]),
+        {"name": "Eve"},
+    )
+
+    assert response.status_code == 200
+    assert not Player.objects.filter(game=active_game, name="Eve").exists()
     assert b"no longer accepting participants" in response.content.lower()
 
 
@@ -233,7 +276,19 @@ def test_toggle_after_game_finished_is_rejected(client, active_game, board_facto
     response = client.post(reverse("bingo:toggle_cell", args=[board.id, square.id]))
 
     square.refresh_from_db()
-    assert response.status_code == 200
+    assert response.status_code == 403
+    assert square.marked is False
+
+
+@pytest.mark.django_db
+def test_toggle_via_get_is_not_allowed(client, active_game, board_factory):
+    board = board_factory(active_game)
+    square = BoardSquare.objects.get(board=board, position=0)
+
+    response = client.get(reverse("bingo:toggle_cell", args=[board.id, square.id]))
+
+    square.refresh_from_db()
+    assert response.status_code == 405
     assert square.marked is False
 
 

@@ -23,7 +23,7 @@ resource "aws_s3_bucket" "terraform_state" {
   # Allows deleting the bucket even if it contains objects.
   # This is useful for teardown environments.
   force_destroy = true
-  
+
   tags = {
     Name = "S3 Remote Terraform State Store"
   }

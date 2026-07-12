@@ -1,3 +1,13 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents** *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Kubernetes Control Plane](#kubernetes-control-plane)
+  - [ArgoCD](#argocd)
+    - [Creating the ArgoCD application manifests](#creating-the-argocd-application-manifests)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Kubernetes Control Plane
 
 ## ArgoCD
@@ -10,11 +20,12 @@ Log in to your ArgoCD dashboard, eg
 
     $ argocd login argocd.sixfeetup.com
 
-Find your cluster context (set your KUBECONFIG file if neccessary)
+Find your cluster context (set your KUBECONFIG file if necessary)
 
     $ kubectl config get-contexts -o name
 
-Add your cluster to ArgoCD. This will also output the `CLUSTER_IP` you will use in the application.
+Add your cluster to ArgoCD.
+This will also output the `CLUSTER_IP` you will use in the application.
 
     $ argocd cluster add bsbingo-environment
  (replace environment with the actual environment name, e.g. `sandbox` or `production`)
@@ -43,4 +54,5 @@ Apply the manifests
 
     $ kubectl apply -f argocd/applications/bsbingo
 
-Your ArgoCD application should be visible on the ArgoCD dashboard. Check the repository and cluster connection.
+Your ArgoCD application should be visible on the ArgoCD dashboard.
+Check the repository and cluster connection.

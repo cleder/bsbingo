@@ -6,9 +6,16 @@ import random
 from typing import TYPE_CHECKING
 
 from django.db import transaction
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.http import (
+    HttpRequest,
+    HttpResponse,
+    HttpResponseForbidden,
+    HttpResponseNotAllowed,
+    HttpResponseRedirect,
+)
 from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
+from django.urls import reverse
 
 from bingo.domain import InsufficientBuzzwordPoolError, has_bingo, select_random_words
 from bingo.forms import DisplayNameForm, GameNameForm
@@ -58,8 +65,16 @@ def join_game(request: HttpRequest, game_id: UUID) -> HttpResponse:
                 return render(request, "bingo/join.html", context)
 
             with transaction.atomic():
+                locked_game = Game.objects.select_for_update().get(pk=game_id)
+                if locked_game.status == GameStatus.FINISHED:
+                    return render(
+                        request,
+                        "bingo/join.html",
+                        {"game": locked_game, "finished": True},
+                    )
+
                 player = Player.objects.create(
-                    game=game,
+                    game=locked_game,
                     name=form.cleaned_data["name"],
                 )
                 board = Board.objects.create(player=player)
@@ -82,7 +97,7 @@ def join_game(request: HttpRequest, game_id: UUID) -> HttpResponse:
                 ]
                 BoardSquare.objects.bulk_create(squares)
 
-            return HttpResponseRedirect(f"/board/{board.id}/")
+            return HttpResponseRedirect(reverse("bingo:view_board", args=[board.id]))
     else:
         form = DisplayNameForm()
 
@@ -100,11 +115,22 @@ def view_board(request: HttpRequest, board_id: UUID) -> HttpResponse:
 
 def toggle_cell(request: HttpRequest, board_id: UUID, cell_id: UUID) -> HttpResponse:
     """Toggle one square and detect a winning line (FR-008 through FR-011)."""
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+
     board = get_object_or_404(Board, pk=board_id)
     square = get_object_or_404(BoardSquare, pk=cell_id, board=board)
     game = board.player.game
 
-    if game.status == GameStatus.FINISHED or square.position == CENTER_POSITION:
+    if game.status == GameStatus.FINISHED:
+        square_fragment = render_to_string(
+            "bingo/partials/_square.html",
+            {"square": square},
+            request=request,
+        )
+        return HttpResponseForbidden(square_fragment)
+
+    if square.position == CENTER_POSITION:
         return render(request, "bingo/partials/_square.html", {"square": square})
 
     square.marked = not square.marked

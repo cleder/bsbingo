@@ -52,11 +52,11 @@ tasks:
           echo -e "{{.RED}}Error: AWS_PROFILE environment variable must be set{{.END}}"
           exit 1
         fi
-        
+
         PROFILE_MSG="using profile '$AWS_PROFILE'"
         echo -e "{{.BLUE}}Checking AWS credentials $PROFILE_MSG...{{.END}}"
-        
-        # Check SSO cache first (faster than API call), because sts get-caller-identity 
+
+        # Check SSO cache first (faster than API call), because sts get-caller-identity
         #  can be slow and will return quicker about expirations, while sts get-caller-identity
         #  does return valid credentials that are actually expired
         NEED_LOGIN=false
@@ -64,7 +64,7 @@ tasks:
         if [ -n "$SSO_START_URL" ]; then
           SSO_CACHE_KEY=$(echo -n "$SSO_START_URL" | sha1sum | cut -d' ' -f1)
           SSO_CACHE_FILE="$HOME/.aws/sso/cache/${SSO_CACHE_KEY}.json"
-          
+
           if [ -f "$SSO_CACHE_FILE" ]; then
             EXPIRES_AT=$(jq -r '.expiresAt // empty' "$SSO_CACHE_FILE" 2>/dev/null)
             if [ -n "$EXPIRES_AT" ]; then
@@ -80,16 +80,16 @@ tasks:
             NEED_LOGIN=true
           fi
         fi
-        
+
         if [ "$NEED_LOGIN" = "false" ] && ! aws sts get-caller-identity --profile "$AWS_PROFILE" >/dev/null 2>&1; then
           NEED_LOGIN=true
         fi
-        
+
         if [ "$NEED_LOGIN" = "true" ]; then
           echo -e "{{.YELLOW}}AWS login required $PROFILE_MSG...{{.END}}"
           aws sso login --profile "$AWS_PROFILE"
         fi
-        
+
         echo -e "{{.GREEN}}AWS credentials verified and working.{{.END}}"
 
   ask-auto-approve:
@@ -100,7 +100,7 @@ tasks:
       - |
         echo -e "{{.YELLOW}}Would you like to auto-approve all terraform operations? (y/N):{{.END}}" >&2
         read -p "> " auto_approve || true
-        
+
         if [ "$auto_approve" = "y" ] || [ "$auto_approve" = "Y" ] || [ "$auto_approve" = "yes" ]; then
           echo -e "{{.GREEN}}Terraform operations will be auto-approved.{{.END}}" >&2
           echo "1"
@@ -175,7 +175,7 @@ tasks:
       - |
         [ "$?" = "0" ] || (echo -e "{{.RED}}Error: Environment must be either 'sandbox', 'staging', or 'production'{{.END}}" && exit 1)
       - echo -e "{{.BLUE}}{{.ACTION}} the {{.ENV}} environment...{{.END}}"
-      
+
   determine-control-plane-ip-address:
     desc: Determine IP addresses for control plane security group configuration
     internal: true
@@ -196,9 +196,9 @@ tasks:
       - echo "2) Enter multiple IP addresses as a comma-separated list"
       - |
         read -p "Enter your choice (1/2): " ip_choice
-        if [ "$ip_choice" = "1" ]; then 
+        if [ "$ip_choice" = "1" ]; then
           PUBLIC_IP_CIDRS="{{.CURRENT_IP}}/32"
-        elif [ "$ip_choice" = "2" ]; then 
+        elif [ "$ip_choice" = "2" ]; then
           echo -e "{{.YELLOW}}Enter comma-separated list of IP addresses (e.g., 1.2.3.4,5.6.7.8):{{.END}}"
           read -p "> " PUBLIC_IP
           PUBLIC_IP_CLEAN=$(echo "$PUBLIC_IP" | sed 's/, /,/g')
@@ -296,4 +296,3 @@ tasks:
       # - task: establish-aws-login
       # - task: teardown-environment
       #   vars: {ENV: production}
-

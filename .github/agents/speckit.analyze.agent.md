@@ -2,6 +2,36 @@
 description: Perform a non-destructive cross-artifact consistency and quality analysis across spec.md, plan.md, and tasks.md after task generation.
 ---
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [User Input](#user-input)
+- [Goal](#goal)
+- [Operating Constraints](#operating-constraints)
+- [Execution Steps](#execution-steps)
+  - [1. Initialize Analysis Context](#1-initialize-analysis-context)
+  - [2. Load Artifacts (Progressive Disclosure)](#2-load-artifacts-progressive-disclosure)
+  - [3. Build Semantic Models](#3-build-semantic-models)
+  - [4. Detection Passes (Token-Efficient Analysis)](#4-detection-passes-token-efficient-analysis)
+    - [A. Duplication Detection](#a-duplication-detection)
+    - [B. Ambiguity Detection](#b-ambiguity-detection)
+    - [C. Underspecification](#c-underspecification)
+    - [D. Constitution Alignment](#d-constitution-alignment)
+    - [E. Coverage Gaps](#e-coverage-gaps)
+    - [F. Inconsistency](#f-inconsistency)
+  - [5. Severity Assignment](#5-severity-assignment)
+  - [6. Produce Compact Analysis Report](#6-produce-compact-analysis-report)
+- [Specification Analysis Report](#specification-analysis-report)
+  - [7. Provide Next Actions](#7-provide-next-actions)
+  - [8. Offer Remediation](#8-offer-remediation)
+- [Operating Principles](#operating-principles)
+  - [Context Efficiency](#context-efficiency)
+  - [Analysis Guidelines](#analysis-guidelines)
+- [Context](#context)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 ## User Input
 
 ```text

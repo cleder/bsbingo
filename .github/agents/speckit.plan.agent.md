@@ -10,6 +10,19 @@ handoffs:
     prompt: Create a checklist for the following domain...
 ---
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [User Input](#user-input)
+- [Outline](#outline)
+- [Phases](#phases)
+  - [Phase 0: Outline & Research](#phase-0-outline--research)
+  - [Phase 1: Design & Contracts](#phase-1-design--contracts)
+- [Key rules](#key-rules)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 ## User Input
 
 ```text

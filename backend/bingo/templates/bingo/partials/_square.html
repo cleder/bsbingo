@@ -1,7 +1,8 @@
-<div id="square-{{ square.id }}"
-     class="square{% if square.marked %} marked{% endif %}"
-     hx-post="/board/{{ square.board_id }}/cell/{{ square.id }}/toggle/"
-     hx-target="this"
-     hx-swap="outerHTML">
+<button type="button"
+        id="square-{{ square.id }}"
+        class="square{% if square.marked %} marked{% endif %}"
+        hx-post="{% url 'bingo:toggle_cell' square.board_id square.id %}"
+        hx-target="this"
+        hx-swap="outerHTML">
     {% if square.buzzword %}{{ square.buzzword.text }}{% else %}FREE{% endif %}
-</div>
+</button>

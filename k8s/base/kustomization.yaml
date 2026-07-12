@@ -7,4 +7,4 @@ resources:
 
 - ./redis.yaml
 - ./pod-priority.yaml
-- ./pod-disruption-budgets.yaml  
+- ./pod-disruption-budgets.yaml

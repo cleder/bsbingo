@@ -40,5 +40,3 @@ module "elb_k8s_elb" {
   number_of_instances = var.control_plane.num_instances
   instances           = module.control_plane_nodes.*.id
 }
-
-

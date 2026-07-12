@@ -6,6 +6,8 @@ PostgreSQL-only. There is no SQLite fallback anywhere -- see
 ``_database_config_from_env`` below.
 """
 
+from __future__ import annotations
+
 import os
 from pathlib import Path
 from typing import TYPE_CHECKING, Any

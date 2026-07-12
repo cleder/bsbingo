@@ -18,5 +18,3 @@ module "vpc" {
   azs            = slice(data.aws_availability_zones.available.names, 0, 3)
   public_subnets = [for i, v in slice(data.aws_availability_zones.available.names, 0, 3) : cidrsubnet(var.cluster_vpc_cidr, 2, i)]
 }
-
-
