@@ -1,0 +1,20 @@
+{% extends "bingo/base.html" %}
+
+{% block title %}Create a Game — Buzzword Bingo{% endblock %}
+
+{% block content %}
+<h1>Create a Buzzword Bingo game</h1>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Create game</button>
+</form>
+
+{% if game %}
+    <p>
+        Game "{{ game.name }}" created! Share this link with participants:
+        <a href="/game/{{ game.id }}/join/">/game/{{ game.id }}/join/</a>
+    </p>
+{% endif %}
+{% endblock %}

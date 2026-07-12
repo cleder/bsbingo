@@ -16,4 +16,5 @@ Pages are added here alongside their mkdocs-material equivalents under `../*.md`
 
 deployment
 development
+gameplay
 ```

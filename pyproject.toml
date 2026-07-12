@@ -1,6 +1,7 @@
 [dependency-groups]
 test = [
     "deptry>=0.25.1,<0.26.0",
+    "django-stubs>=6.0",
     "hypothesis[django]>=6.156.6",
     "pytest-cov>=7.0.0",
     "pytest-django>=4.12.0",
@@ -64,16 +65,25 @@ select = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
+"backend/*/migrations/*.py" = [
+    "D100",
+    "D101",
+    "E501",
+    "RUF012",
+]
 "backend/tests/**" = [
     "ANN001",
     "ANN201",
+    "ARG001",
     "D100",
     "D101",
     "D102",
     "D103",
     "D104",
     "INP001",
+    "PLR2004",
     "S101",
+    "S311",
 ]
 "docs/sphinx/conf.py" = [
     "INP001",
