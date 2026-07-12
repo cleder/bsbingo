@@ -30,8 +30,12 @@ _POSTGRES_VAR_NAMES = (
     dbname=_SAFE_IDENTIFIER,
 )
 def test_database_url_is_parsed_into_postgres_config(
-    user, password, host, port, dbname
-):
+    user: str,
+    password: str,
+    host: str,
+    port: int,
+    dbname: str,
+) -> None:
     database_url = f"postgresql://{user}:{password}@{host}:{port}/{dbname}"
 
     config = _database_config_from_env({"DATABASE_URL": database_url})
@@ -51,8 +55,11 @@ def test_database_url_is_parsed_into_postgres_config(
     password=_SAFE_IDENTIFIER,
 )
 def test_discrete_postgres_vars_are_used_when_database_url_is_absent(
-    host, dbname, user, password
-):
+    host: str,
+    dbname: str,
+    user: str,
+    password: str,
+) -> None:
     config = _database_config_from_env(
         {
             "POSTGRES_HOST": host,
@@ -69,7 +76,7 @@ def test_discrete_postgres_vars_are_used_when_database_url_is_absent(
     assert config["PORT"] == "5432"
 
 
-def test_database_url_takes_precedence_over_discrete_vars():
+def test_database_url_takes_precedence_over_discrete_vars() -> None:
     url = "postgresql://urluser:urlpass@urlhost:5432/urldb"  # pragma: allowlist secret
     config = _database_config_from_env(
         {
@@ -85,22 +92,22 @@ def test_database_url_takes_precedence_over_discrete_vars():
     assert config["HOST"] == "urlhost"
 
 
-def test_missing_database_url_and_postgres_vars_raises_improperly_configured():
+def test_missing_database_url_and_postgres_vars_raises_improperly_configured() -> None:
     with pytest.raises(ImproperlyConfigured):
         _database_config_from_env({})
 
 
 @given(present_var=st.sampled_from(_POSTGRES_VAR_NAMES))
-def test_partial_postgres_vars_raises_improperly_configured(present_var):
+def test_partial_postgres_vars_raises_improperly_configured(present_var: str) -> None:
     with pytest.raises(ImproperlyConfigured):
         _database_config_from_env({present_var: "something"})
 
 
-def test_malformed_database_url_raises_improperly_configured():
+def test_malformed_database_url_raises_improperly_configured() -> None:
     with pytest.raises(ImproperlyConfigured):
         _database_config_from_env({"DATABASE_URL": "not a valid postgres dsn ??"})
 
 
-def test_no_code_path_ever_produces_sqlite_engine():
+def test_no_code_path_ever_produces_sqlite_engine() -> None:
     config = _database_config_from_env({"DATABASE_URL": "postgresql://u:p@h:5432/d"})
     assert config["ENGINE"] != "django.db.backends.sqlite3"

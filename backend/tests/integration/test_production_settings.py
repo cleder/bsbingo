@@ -11,9 +11,9 @@ overrides it back to SQLite.
 from config.settings import production
 
 
-def test_production_settings_use_postgresql():
+def test_production_settings_use_postgresql() -> None:
     assert production.DATABASES["default"]["ENGINE"] == "django.db.backends.postgresql"
 
 
-def test_production_settings_disable_debug():
+def test_production_settings_disable_debug() -> None:
     assert production.DEBUG is False

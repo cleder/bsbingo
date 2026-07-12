@@ -25,6 +25,11 @@ requires-python = ">=3.14"
 version = "0.1.0"
 
 [tool.pyrefly]
+preset = "strict"
+project-excludes = [
+    "**/migrations/*.py",
+    "tasks.py",
+]
 project-includes = [
     "**/*.ipynb",
     "**/*.py*",
@@ -55,7 +60,6 @@ extend-safe-fixes = [
     "UP047",
 ]
 ignore = [
-    "ANN401",
     "COM812",
     "D203",
     "D212",
@@ -88,6 +92,16 @@ select = [
 "docs/sphinx/conf.py" = [
     "INP001",
 ]
+
+[tool.ty.rules]
+missing-override-decorator = "ignore"
+missing-type-argument = "error"
+possibly-missing-attribute = "error"
+possibly-missing-import = "error"
+possibly-unresolved-reference = "error"
+redundant-cast = "error"
+unused-ignore-comment = "error"
+unused-type-ignore-comment = "error"
 
 [tool.uv]
 add-bounds = "major"

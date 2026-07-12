@@ -10,7 +10,11 @@ from bingo.models import Board, BoardSquare, Buzzword, Game, GameStatus, Player
 from django.urls import reverse
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from django.contrib.auth.models import User
     from django.db.models import QuerySet
+    from django.test import Client
 
 CENTER_POSITION = 12
 
@@ -18,7 +22,9 @@ CENTER_POSITION = 12
 
 
 @pytest.mark.django_db
-def test_create_game_with_valid_name_creates_active_game_and_shows_join_url(client):
+def test_create_game_with_valid_name_creates_active_game_and_shows_join_url(
+    client: Client,
+) -> None:
     response = client.post(reverse("bingo:create_game"), {"name": "Sprint Planning"})
 
     game = Game.objects.get()
@@ -30,9 +36,9 @@ def test_create_game_with_valid_name_creates_active_game_and_shows_join_url(clie
 @pytest.mark.django_db
 @pytest.mark.parametrize("blank_name", ["", "   "])
 def test_create_game_with_blank_name_creates_nothing_and_shows_error(
-    client,
-    blank_name,
-):
+    client: Client,
+    blank_name: str,
+) -> None:
     response = client.post(reverse("bingo:create_game"), {"name": blank_name})
 
     assert response.status_code == 200
@@ -43,23 +49,23 @@ def test_create_game_with_blank_name_creates_nothing_and_shows_error(
 
 
 @pytest.fixture
-def buzzword_pool(db):
+def buzzword_pool(db: None) -> list[Buzzword]:
     """Create 30 active buzzwords -- comfortably more than the 24 needed."""
     return [Buzzword.objects.create(text=f"word-{i}") for i in range(30)]
 
 
 @pytest.fixture
-def active_game(db):
+def active_game(db: None) -> Game:
     """Create a single active game to join in each test."""
     return Game.objects.create(name="Test Game")
 
 
 @pytest.mark.django_db
 def test_join_active_game_creates_player_board_and_25_squares(
-    client,
-    buzzword_pool,
-    active_game,
-):
+    client: Client,
+    buzzword_pool: list[Buzzword],
+    active_game: Game,
+) -> None:
     response = client.post(
         reverse("bingo:join_game", args=[active_game.id]),
         {"name": "Alice"},
@@ -84,7 +90,7 @@ def test_join_active_game_creates_player_board_and_25_squares(
 
 
 @pytest.mark.django_db
-def test_join_route_404s_for_nonexistent_or_malformed_game_id(client):
+def test_join_route_404s_for_nonexistent_or_malformed_game_id(client: Client) -> None:
     response = client.get(f"/game/{uuid4()}/join/")
     assert response.status_code == 404
 
@@ -94,10 +100,10 @@ def test_join_route_404s_for_nonexistent_or_malformed_game_id(client):
 
 @pytest.mark.django_db
 def test_join_with_duplicate_display_names_creates_independent_players(
-    client,
-    buzzword_pool,
-    active_game,
-):
+    client: Client,
+    buzzword_pool: list[Buzzword],
+    active_game: Game,
+) -> None:
     join_url = reverse("bingo:join_game", args=[active_game.id])
     client.post(join_url, {"name": "Bob"})
     client.post(join_url, {"name": "Bob"})
@@ -110,7 +116,10 @@ def test_join_with_duplicate_display_names_creates_independent_players(
 
 
 @pytest.mark.django_db
-def test_join_finished_game_creates_nothing_and_shows_message(client, buzzword_pool):
+def test_join_finished_game_creates_nothing_and_shows_message(
+    client: Client,
+    buzzword_pool: list[Buzzword],
+) -> None:
     finished_game = Game.objects.create(name="Done", status=GameStatus.FINISHED)
 
     response = client.post(
@@ -125,11 +134,11 @@ def test_join_finished_game_creates_nothing_and_shows_message(client, buzzword_p
 
 @pytest.mark.django_db
 def test_join_finished_between_initial_check_and_lock_is_rejected(
-    monkeypatch,
-    client,
-    buzzword_pool,
-    active_game,
-):
+    monkeypatch: pytest.MonkeyPatch,
+    client: Client,
+    buzzword_pool: list[Buzzword],
+    active_game: Game,
+) -> None:
     """
     Simulate FR-005's race window.
 
@@ -163,11 +172,11 @@ def test_join_finished_between_initial_check_and_lock_is_rejected(
 @pytest.mark.django_db
 @pytest.mark.parametrize("blank_name", ["", "   "])
 def test_join_with_blank_display_name_creates_nothing_and_shows_error(
-    client,
-    buzzword_pool,
-    active_game,
-    blank_name,
-):
+    client: Client,
+    buzzword_pool: list[Buzzword],
+    active_game: Game,
+    blank_name: str,
+) -> None:
     response = client.post(
         reverse("bingo:join_game", args=[active_game.id]),
         {"name": blank_name},
@@ -178,7 +187,10 @@ def test_join_with_blank_display_name_creates_nothing_and_shows_error(
 
 
 @pytest.mark.django_db
-def test_join_with_insufficient_buzzword_pool_is_declined(client, active_game):
+def test_join_with_insufficient_buzzword_pool_is_declined(
+    client: Client,
+    active_game: Game,
+) -> None:
     for i in range(5):
         Buzzword.objects.create(text=f"only-{i}")
 
@@ -195,10 +207,10 @@ def test_join_with_insufficient_buzzword_pool_is_declined(client, active_game):
 
 
 @pytest.fixture
-def board_factory(buzzword_pool):
+def board_factory(buzzword_pool: list[Buzzword]) -> Callable[[Game], Board]:
     """Create fully-populated boards (25 squares, center pre-marked)."""
 
-    def _make_board(game) -> Board:
+    def _make_board(game: Game) -> Board:
         player = Player.objects.create(game=game, name=f"Player-{uuid4()}")
         board = Board.objects.create(player=player)
         words = iter(buzzword_pool)
@@ -223,10 +235,10 @@ def board_factory(buzzword_pool):
 
 @pytest.mark.django_db
 def test_toggle_non_winning_square_updates_marked_state_only(
-    client,
-    active_game,
-    board_factory,
-):
+    client: Client,
+    active_game: Game,
+    board_factory: Callable[[Game], Board],
+) -> None:
     board = board_factory(active_game)
     square = BoardSquare.objects.get(board=board, position=0)
 
@@ -240,10 +252,10 @@ def test_toggle_non_winning_square_updates_marked_state_only(
 
 @pytest.mark.django_db
 def test_toggle_completing_line_finishes_game_and_returns_winner_banner(
-    client,
-    active_game,
-    board_factory,
-):
+    client: Client,
+    active_game: Game,
+    board_factory: Callable[[Game], Board],
+) -> None:
     board = board_factory(active_game)
     row_positions = [0, 1, 2, 3, 4]
     row_squares = {
@@ -261,13 +273,17 @@ def test_toggle_completing_line_finishes_game_and_returns_winner_banner(
 
     active_game.refresh_from_db()
     assert active_game.status == GameStatus.FINISHED
-    assert active_game.winner_id == board.player_id
+    assert active_game.winner == board.player
     assert response.status_code == 200
     assert b"hx-swap-oob" in response.content
 
 
 @pytest.mark.django_db
-def test_toggle_after_game_finished_is_rejected(client, active_game, board_factory):
+def test_toggle_after_game_finished_is_rejected(
+    client: Client,
+    active_game: Game,
+    board_factory: Callable[[Game], Board],
+) -> None:
     board = board_factory(active_game)
     active_game.status = GameStatus.FINISHED
     active_game.save()
@@ -281,7 +297,11 @@ def test_toggle_after_game_finished_is_rejected(client, active_game, board_facto
 
 
 @pytest.mark.django_db
-def test_toggle_via_get_is_not_allowed(client, active_game, board_factory):
+def test_toggle_via_get_is_not_allowed(
+    client: Client,
+    active_game: Game,
+    board_factory: Callable[[Game], Board],
+) -> None:
     board = board_factory(active_game)
     square = BoardSquare.objects.get(board=board, position=0)
 
@@ -294,10 +314,10 @@ def test_toggle_via_get_is_not_allowed(client, active_game, board_factory):
 
 @pytest.mark.django_db
 def test_toggle_404s_for_nonexistent_malformed_or_mismatched_ids(
-    client,
-    active_game,
-    board_factory,
-):
+    client: Client,
+    active_game: Game,
+    board_factory: Callable[[Game], Board],
+) -> None:
     board = board_factory(active_game)
     other_board = board_factory(active_game)
     square_on_other_board = BoardSquare.objects.get(board=other_board, position=0)
@@ -315,7 +335,9 @@ def test_toggle_404s_for_nonexistent_malformed_or_mismatched_ids(
 
 
 @pytest.mark.django_db
-def test_view_board_404s_for_nonexistent_or_malformed_board_id(client):
+def test_view_board_404s_for_nonexistent_or_malformed_board_id(
+    client: Client,
+) -> None:
     response = client.get(f"/board/{uuid4()}/")
     assert response.status_code == 404
 
@@ -324,7 +346,11 @@ def test_view_board_404s_for_nonexistent_or_malformed_board_id(client):
 
 
 @pytest.mark.django_db
-def test_toggle_center_square_is_noop(client, active_game, board_factory):
+def test_toggle_center_square_is_noop(
+    client: Client,
+    active_game: Game,
+    board_factory: Callable[[Game], Board],
+) -> None:
     board = board_factory(active_game)
     center = BoardSquare.objects.get(board=board, position=CENTER_POSITION)
 
@@ -337,9 +363,9 @@ def test_toggle_center_square_is_noop(client, active_game, board_factory):
 
 @pytest.mark.django_db
 def test_concurrent_winning_toggles_only_first_recorded_as_winner(
-    active_game,
-    board_factory,
-):
+    active_game: Game,
+    board_factory: Callable[[Game], Board],
+) -> None:
     board_a = board_factory(active_game)
     board_b = board_factory(active_game)
 
@@ -355,7 +381,7 @@ def test_concurrent_winning_toggles_only_first_recorded_as_winner(
     active_game.refresh_from_db()
     assert updated_first == 1
     assert updated_second == 0
-    assert active_game.winner_id == board_a.player_id
+    assert active_game.winner == board_a.player
 
 
 # --- User Story 4: Manage the buzzword pool --------------------------------
@@ -363,9 +389,9 @@ def test_concurrent_winning_toggles_only_first_recorded_as_winner(
 
 @pytest.mark.django_db
 def test_deactivated_buzzword_excluded_from_boards_generated_afterward(
-    client,
-    active_game,
-):
+    client: Client,
+    active_game: Game,
+) -> None:
     early_word = Buzzword.objects.create(text="early-word")
 
     before_player = Player.objects.create(game=active_game, name="Before")
@@ -400,7 +426,10 @@ def test_deactivated_buzzword_excluded_from_boards_generated_afterward(
 
 
 @pytest.mark.django_db
-def test_admin_exposes_finished_game_status_and_winner(client, django_user_model):
+def test_admin_exposes_finished_game_status_and_winner(
+    client: Client,
+    django_user_model: type[User],
+) -> None:
     admin_user = django_user_model.objects.create_superuser(
         username="admin",
         email="admin@example.com",

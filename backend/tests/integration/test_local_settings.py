@@ -8,9 +8,9 @@ needed here.
 from config.settings import local
 
 
-def test_local_settings_use_postgresql():
+def test_local_settings_use_postgresql() -> None:
     assert local.DATABASES["default"]["ENGINE"] == "django.db.backends.postgresql"
 
 
-def test_local_settings_enable_debug():
+def test_local_settings_enable_debug() -> None:
     assert local.DEBUG is True

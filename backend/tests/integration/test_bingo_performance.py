@@ -7,11 +7,17 @@ budget -- a proxy for SC-004 without the flakiness of real thread-based
 concurrency against a transactional test database.
 """
 
+from __future__ import annotations
+
 import time
+from typing import TYPE_CHECKING
 
 import pytest
 from bingo.models import Board, BoardSquare, Buzzword, Game, Player
 from django.urls import reverse
+
+if TYPE_CHECKING:
+    from django.test import Client
 
 PARTICIPANT_COUNT = 100
 LATENCY_BUDGET_SECONDS = 0.5
@@ -19,7 +25,9 @@ CENTER_POSITION = 12
 
 
 @pytest.mark.django_db
-def test_toggle_cell_stays_under_latency_budget_for_many_participants(client):
+def test_toggle_cell_stays_under_latency_budget_for_many_participants(
+    client: Client,
+) -> None:
     game = Game.objects.create(name="Load Test Game")
     words = [Buzzword.objects.create(text=f"word-{i}") for i in range(24)]
 
