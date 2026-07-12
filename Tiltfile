@@ -11,11 +11,12 @@ load("ext://syncback", "syncback")
 
 docker_build(
     "backend",
-    context="backend",
+    context=".",
+    dockerfile="./backend/Dockerfile",
     build_args={"DEVEL": "yes", "TEST": "yes"},
     live_update=[
         sync("./backend/config", "/app/src/config"),
-        sync("./backend/bsbingo", "/app/src/bsbingo"),
+        sync("./backend/bingo", "/app/src/bingo"),
     ],
 )
 
@@ -28,8 +29,8 @@ k8s_yaml(
 syncback(
     "backend-sync",
     "deploy/backend",
-    "/app/src/bsbingo/",
-    target_dir="./backend/bsbingo",
+    "/app/src/bingo/",
+    target_dir="./backend/bingo",
     rsync_path='/app/bin/rsync.tilt',
 )
 
