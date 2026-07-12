@@ -6,6 +6,7 @@ import {
   initThemeToggle,
   type StorageLike,
   type Theme,
+  type MediaQueryLike,
 } from '../../src/theme-toggle';
 
 function makeFakeStorage(initial: Record<string, string> = {}): StorageLike {
@@ -42,6 +43,29 @@ test('getStoredTheme returns null for anything that is not a valid theme', () =>
 
 test('getStoredTheme returns null when nothing has been stored yet', () => {
   expect(getStoredTheme(makeFakeStorage())).toBeNull();
+});
+
+test('getStoredTheme returns null when storage.getItem throws', () => {
+  const throwingStorage: StorageLike = {
+    getItem: () => {
+      throw new Error('storage blocked');
+    },
+    setItem: () => {},
+  };
+
+  expect(() => getStoredTheme(throwingStorage)).not.toThrow();
+  expect(getStoredTheme(throwingStorage)).toBeNull();
+});
+
+test('setStoredTheme swallows an error when storage.setItem throws', () => {
+  const throwingStorage: StorageLike = {
+    getItem: () => null,
+    setItem: () => {
+      throw new Error('storage full');
+    },
+  };
+
+  expect(() => setStoredTheme(throwingStorage, 'dark')).not.toThrow();
 });
 
 interface FakeButton {
@@ -100,6 +124,37 @@ test('initThemeToggle syncs aria-pressed to whatever theme is already applied on
   initThemeToggle(doc, makeFakeStorage());
 
   expect(fakeButton.element.getAttribute('aria-pressed')).toBe('true');
+});
+
+test('initThemeToggle does not force a data-theme choice, but reflects the OS preference on the button', () => {
+  const fakeButton = makeFakeButton();
+  const root = makeFakeRoot();
+  const doc = makeFakeDoc(fakeButton.element, root);
+
+  initThemeToggle(doc, makeFakeStorage(), { matches: true });
+
+  // No explicit choice was ever made -- must NOT override the CSS
+  // prefers-color-scheme fallback by forcing an attribute onto <html>.
+  expect(root.getAttribute('data-theme')).toBeNull();
+  // But the button itself should still reflect what's actually showing.
+  expect(fakeButton.element.getAttribute('aria-pressed')).toBe('true');
+});
+
+test('the default prefersDark query falls back to a real window.matchMedia when present', () => {
+  const fakeButton = makeFakeButton();
+  const root = makeFakeRoot();
+  const doc = makeFakeDoc(fakeButton.element, root);
+
+  const globalWithWindow = globalThis as { window?: { matchMedia: (query: string) => MediaQueryLike } };
+  const originalWindow = globalWithWindow.window;
+  globalWithWindow.window = { matchMedia: () => ({ matches: true }) };
+  try {
+    // No third argument -- exercises the default parameter's real-browser path.
+    initThemeToggle(doc, makeFakeStorage());
+    expect(fakeButton.element.getAttribute('aria-pressed')).toBe('true');
+  } finally {
+    globalWithWindow.window = originalWindow;
+  }
 });
 
 test('clicking the toggle switches the theme and persists the choice', () => {

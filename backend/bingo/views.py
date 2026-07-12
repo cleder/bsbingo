@@ -9,7 +9,6 @@ from django.db import transaction
 from django.http import (
     HttpRequest,
     HttpResponse,
-    HttpResponseForbidden,
     HttpResponseNotAllowed,
     HttpResponseRedirect,
 )
@@ -18,6 +17,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 
 from bingo.domain import (
+    BOARD_WORD_COUNT,
     InsufficientBuzzwordPoolError,
     select_random_words,
     winning_lines,
@@ -31,7 +31,6 @@ if TYPE_CHECKING:
     from django.db.models.query import QuerySet
 
 CENTER_POSITION = 12
-BOARD_WORD_COUNT = 24
 
 
 class _HomeContext(TypedDict):
@@ -172,8 +171,10 @@ def join_game(request: HttpRequest, game_id: UUID) -> HttpResponse:
 def view_board(request: HttpRequest, board_id: UUID) -> HttpResponse:
     """Render one participant's board (FR-005-009, FR-015-016)."""
     board: Board = get_object_or_404(Board, pk=board_id)
-    squares: QuerySet[BoardSquare] = BoardSquare.objects.filter(board=board).order_by(
-        "position"
+    squares: QuerySet[BoardSquare] = (
+        BoardSquare.objects.filter(board=board)
+        .select_related("buzzword")
+        .order_by("position")
     )
     game: Game = board.player.game
     is_readonly = game.status == GameStatus.FINISHED
@@ -184,7 +185,7 @@ def view_board(request: HttpRequest, board_id: UUID) -> HttpResponse:
                 squares.filter(marked=True).values_list("position", flat=True),
             ),
         )
-        if is_readonly
+        if is_winner
         else frozenset()
     )
     context: _BoardContext = {
@@ -198,8 +199,68 @@ def view_board(request: HttpRequest, board_id: UUID) -> HttpResponse:
     return render(request, "bingo/board.html", context)
 
 
+def _finished_board_response(
+    request: HttpRequest,
+    board: Board,
+    game: Game,
+    clicked_square: BoardSquare,
+) -> HttpResponse:
+    """
+    Render the read-only board and finished/winner banner for one participant.
+
+    Shared by "this tap arrived after the game already ended" and "this
+    tap just completed the winning line", so `is_winner` is always
+    derived from the authoritative `game.winner` (never assumed), and
+    both callers deliver the full-board read-only OOB swap (FR-016), not
+    just the tapped cell.
+    """
+    is_winner = game.winner == board.player
+    marked_positions = (
+        frozenset(
+            BoardSquare.objects.filter(board=board, marked=True).values_list(
+                "position",
+                flat=True,
+            ),
+        )
+        if is_winner
+        else frozenset()
+    )
+    winners = winning_lines(marked_positions) if is_winner else frozenset()
+
+    clicked_fragment = render_to_string(
+        "bingo/partials/_square.html",
+        _SquareContext(
+            square=clicked_square,
+            winning_positions=winners,
+            is_readonly=True,
+        ),
+        request=request,
+    )
+    other_fragments = "".join(
+        render_to_string(
+            "bingo/partials/_square.html",
+            _SquareContext(
+                square=other,
+                winning_positions=winners,
+                is_readonly=True,
+                oob=True,
+            ),
+            request=request,
+        )
+        for other in BoardSquare.objects.filter(board=board)
+        .select_related("buzzword")
+        .exclude(pk=clicked_square.pk)
+    )
+    banner_fragment = render_to_string(
+        "bingo/partials/_winner_banner.html",
+        _WinnerBannerContext(game=game, is_winner=is_winner),
+        request=request,
+    )
+    return HttpResponse(clicked_fragment + other_fragments + banner_fragment)
+
+
 def toggle_cell(request: HttpRequest, board_id: UUID, cell_id: UUID) -> HttpResponse:
-    """Toggle one square and detect a winning line (FR-008-011, FR-015)."""
+    """Toggle one square and detect a winning line (FR-008-011, FR-015-016)."""
     if request.method != "POST":
         return HttpResponseNotAllowed(["POST"])
 
@@ -208,25 +269,7 @@ def toggle_cell(request: HttpRequest, board_id: UUID, cell_id: UUID) -> HttpResp
     game: Game = board.player.game
 
     if game.status == GameStatus.FINISHED:
-        is_winner = game.winner == board.player
-        marked_positions = frozenset(
-            BoardSquare.objects.filter(board=board, marked=True).values_list(
-                "position",
-                flat=True,
-            ),
-        )
-        square_fragment = render_to_string(
-            "bingo/partials/_square.html",
-            _SquareContext(
-                square=square,
-                winning_positions=(
-                    winning_lines(marked_positions) if is_winner else frozenset()
-                ),
-                is_readonly=True,
-            ),
-            request=request,
-        )
-        return HttpResponseForbidden(square_fragment)
+        return _finished_board_response(request, board, game, square)
 
     if square.position == CENTER_POSITION:
         return render(
@@ -248,20 +291,18 @@ def toggle_cell(request: HttpRequest, board_id: UUID, cell_id: UUID) -> HttpResp
             flat=True,
         ),
     )
-    winners = winning_lines(marked_positions)
-    game_now_finished = bool(winners)
-
-    square_fragment = render_to_string(
-        "bingo/partials/_square.html",
-        _SquareContext(
-            square=square,
-            winning_positions=winners,
-            is_readonly=game_now_finished,
-        ),
-        request=request,
-    )
+    game_now_finished = bool(winning_lines(marked_positions))
 
     if not game_now_finished:
+        square_fragment = render_to_string(
+            "bingo/partials/_square.html",
+            _SquareContext(
+                square=square,
+                winning_positions=frozenset(),
+                is_readonly=False,
+            ),
+            request=request,
+        )
         return HttpResponse(square_fragment)
 
     Game.objects.filter(pk=game.id, status=GameStatus.ACTIVE).update(
@@ -269,28 +310,4 @@ def toggle_cell(request: HttpRequest, board_id: UUID, cell_id: UUID) -> HttpResp
         winner=board.player,
     )
     game.refresh_from_db()
-
-    # Every other square becomes read-only via out-of-band swaps -- the
-    # primary HTMX response only replaces the tapped cell (hx-target="this"),
-    # but FR-016 requires the *entire* board inert the instant the game ends,
-    # not just the winning line's cells.
-    other_square_fragments = "".join(
-        render_to_string(
-            "bingo/partials/_square.html",
-            _SquareContext(
-                square=other,
-                winning_positions=winners,
-                is_readonly=True,
-                oob=True,
-            ),
-            request=request,
-        )
-        for other in BoardSquare.objects.filter(board=board).exclude(pk=square.pk)
-    )
-
-    banner_fragment = render_to_string(
-        "bingo/partials/_winner_banner.html",
-        _WinnerBannerContext(game=game, is_winner=True),
-        request=request,
-    )
-    return HttpResponse(square_fragment + other_square_fragments + banner_fragment)
+    return _finished_board_response(request, board, game, square)

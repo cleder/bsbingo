@@ -6,8 +6,8 @@ from typing import override
 
 from django.core.management.base import BaseCommand
 
+from bingo.domain import BOARD_WORD_COUNT
 from bingo.models import Buzzword
-from bingo.views import BOARD_WORD_COUNT
 
 _DEFAULT_COUNT = 40
 

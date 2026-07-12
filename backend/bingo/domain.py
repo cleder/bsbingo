@@ -15,6 +15,8 @@ if TYPE_CHECKING:
 
 T = TypeVar("T")
 
+BOARD_WORD_COUNT = 24
+
 _GRID_SIZE = 5
 
 _ROWS: Final = tuple(

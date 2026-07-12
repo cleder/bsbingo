@@ -31,7 +31,7 @@
     "build": "tsc",
     "docs:screenshots": "playwright test e2e/docs-screenshots.spec.ts",
     "e2e": "playwright test e2e",
-    "test:unit": "c8 --all --src src --100 playwright test tests/unit"
+    "test:unit": "c8 --all --src src --100 playwright test --config=playwright.unit.config.ts"
   },
   "version": "0.1.0"
 }

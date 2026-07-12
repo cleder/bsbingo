@@ -27,11 +27,6 @@ export default defineConfig({
       testDir: 'e2e',
       use: { ...devices['Desktop Chrome'], viewport: { width: 1024, height: 800 } },
     },
-    {
-      name: 'unit',
-      testDir: 'tests/unit',
-      use: { ...devices['Desktop Chrome'] },
-    },
   ],
   webServer: {
     // --insecure: `config.settings.test` sets DEBUG=False, and Django's
