@@ -60,14 +60,14 @@ No other feature's files are touched.
 
 **Purpose**: Stand up the new `frontend/` Node project and wire its build output into Django's static files, so every later story has somewhere to add specs/styles.
 
-- [ ] T001 Create `frontend/package.json` (name `bsbingo-frontend`, private, devDependencies `@playwright/test`, `fast-check`, `typescript`, `c8`) with npm scripts `"test:unit": "c8 --all --src src --100 playwright test tests/unit"`, `"e2e": "playwright test e2e"`, and `"build": "tsc"`
-- [ ] T001a [P] Configure `c8`'s coverage config (`.c8rc.json` or a `"c8"` key in `frontend/package.json`) to instrument `frontend/src/**` and fail the run below 100% line/branch/function coverage, satisfying the constitution's "100% test coverage required for custom TypeScript" (Principle I) — `npm run test:unit` (T001) must exit non-zero on any shortfall
-- [ ] T002 [P] Create `frontend/tsconfig.json` (`"strict": true`, `"target": "ES2022"`, `"module": "ES2022"`, `"outDir": "dist"`, `"rootDir": "src"`)
-- [ ] T003 [P] Create `frontend/playwright.config.ts`: a `mobile` project (viewport ≤430px, e.g. Playwright's `Pixel 7` device) and a `desktop` project (Chromium, viewport ≥700px), a `webServer` entry that runs `uv run backend/manage.py runserver` with env `DJANGO_SETTINGS_MODULE=config.settings.test` **and `DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1`** (required because `config.settings.test` sets `DEBUG=False`, so Django's dev-only localhost allowance does not apply and `ALLOWED_HOSTS` — empty by default in `base.py` — must be set explicitly or every request gets rejected with `DisallowedHost`), and a matching `baseURL` (research.md decision)
-- [ ] T004 [P] Add `frontend/node_modules/`, `frontend/dist/`, and `frontend/test-results/` to `.gitignore`
-- [ ] T005 Run `npm install` inside `frontend/` to generate `frontend/package-lock.json`
-- [ ] T006 [P] Add an entry for `frontend/dist` to `STATICFILES_DIRS` in `backend/config/settings/base.py` (research.md decision — serves the compiled `copy-link.js` via `{% static %}` without checking in a build artifact)
-- [ ] T007 [P] Add a `<meta name="viewport" content="width=device-width, initial-scale=1">` tag and a `<link rel="stylesheet" href="{% static 'bingo/css/bingo.css' %}">` to `backend/bingo/templates/bingo/base.html`, and create the (initially empty) `backend/bingo/static/bingo/css/bingo.css`
+- [X] T001 Create `frontend/package.json` (name `bsbingo-frontend`, private, devDependencies `@playwright/test`, `fast-check`, `typescript`, `c8`) with npm scripts `"test:unit": "c8 --all --src src --100 playwright test tests/unit"`, `"e2e": "playwright test e2e"`, and `"build": "tsc"`
+- [X] T001a [P] Configure `c8`'s coverage config (`.c8rc.json` or a `"c8"` key in `frontend/package.json`) to instrument `frontend/src/**` and fail the run below 100% line/branch/function coverage, satisfying the constitution's "100% test coverage required for custom TypeScript" (Principle I) — `npm run test:unit` (T001) must exit non-zero on any shortfall
+- [X] T002 [P] Create `frontend/tsconfig.json` (`"strict": true`, `"target": "ES2022"`, `"module": "ES2022"`, `"outDir": "dist"`, `"rootDir": "src"`)
+- [X] T003 [P] Create `frontend/playwright.config.ts`: a `mobile` project (viewport ≤430px, e.g. Playwright's `Pixel 7` device) and a `desktop` project (Chromium, viewport ≥700px), a `webServer` entry that runs `uv run backend/manage.py runserver` with env `DJANGO_SETTINGS_MODULE=config.settings.test` **and `DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1`** (required because `config.settings.test` sets `DEBUG=False`, so Django's dev-only localhost allowance does not apply and `ALLOWED_HOSTS` — empty by default in `base.py` — must be set explicitly or every request gets rejected with `DisallowedHost`), and a matching `baseURL` (research.md decision)
+- [X] T004 [P] Add `frontend/node_modules/`, `frontend/dist/`, and `frontend/test-results/` to `.gitignore`
+- [X] T005 Run `npm install` inside `frontend/` to generate `frontend/package-lock.json`
+- [X] T006 [P] Add an entry for `frontend/dist` to `STATICFILES_DIRS` in `backend/config/settings/base.py` (research.md decision — serves the compiled `copy-link.js` via `{% static %}` without checking in a build artifact)
+- [X] T007 [P] Add a `<meta name="viewport" content="width=device-width, initial-scale=1">` tag and a `<link rel="stylesheet" href="{% static 'bingo/css/bingo.css' %}">` to `backend/bingo/templates/bingo/base.html`, and create the (initially empty) `backend/bingo/static/bingo/css/bingo.css`
 
 **Checkpoint**: `frontend/` project scaffolded and installable; Django is wired to serve its future CSS/JS output.
 No behavior has changed yet.
@@ -80,11 +80,11 @@ No behavior has changed yet.
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T008 [P] Add shared visual-language base styles to `backend/bingo/static/bingo/css/bingo.css`: a minimal CSS reset, typography scale, spacing scale, rounded-corner/soft-shadow tokens (custom properties), and a visible `:focus-visible` outline style used on every screen (FR-011, FR-013, FR-019)
-- [ ] T009 [P] Write a hypothesis property test for a new `winning_lines(marked: frozenset[int]) -> frozenset[int]` domain function in `backend/tests/unit/test_domain.py` (asserts the returned set is exactly the union of every fully marked line, and is empty when no line is complete) — must fail (function doesn't exist yet)
-- [ ] T010 Implement `winning_lines(marked: frozenset[int]) -> frozenset[int]` in `backend/bingo/domain.py`, alongside the existing `has_bingo`/`WINNING_LINES` (depends on T009)
-- [ ] T011 Extend `_BoardContext`/`_SquareContext` in `backend/bingo/views.py` with an `is_winner: bool` / `winning_positions: frozenset[int]` computation (via `winning_lines()`, only meaningful when `game.status == GameStatus.FINISHED`), threaded through `view_board` and `toggle_cell` so both the initial render and the winning-toggle response can mark which squares are part of the completed line (depends on T010)
-- [ ] T012 [P] Create a shared Playwright helper `frontend/e2e/support/game-flow.ts` exporting `createGame(page, name): Promise<{ joinUrl: string }>` and `joinGame(page, joinUrl, playerName): Promise<void>`, driven entirely through the UI (no direct DB access) — used by every e2e spec below
+- [X] T008 [P] Add shared visual-language base styles to `backend/bingo/static/bingo/css/bingo.css`: a minimal CSS reset, typography scale, spacing scale, rounded-corner/soft-shadow tokens (custom properties), and a visible `:focus-visible` outline style used on every screen (FR-011, FR-013, FR-019)
+- [X] T009 [P] Write a hypothesis property test for a new `winning_lines(marked: frozenset[int]) -> frozenset[int]` domain function in `backend/tests/unit/test_domain.py` (asserts the returned set is exactly the union of every fully marked line, and is empty when no line is complete) — must fail (function doesn't exist yet)
+- [X] T010 Implement `winning_lines(marked: frozenset[int]) -> frozenset[int]` in `backend/bingo/domain.py`, alongside the existing `has_bingo`/`WINNING_LINES` (depends on T009)
+- [X] T011 Extend `_BoardContext`/`_SquareContext` in `backend/bingo/views.py` with an `is_winner: bool` / `winning_positions: frozenset[int]` computation (via `winning_lines()`, only meaningful when `game.status == GameStatus.FINISHED`), threaded through `view_board` and `toggle_cell` so both the initial render and the winning-toggle response can mark which squares are part of the completed line (depends on T010)
+- [X] T012 [P] Create a shared Playwright helper `frontend/e2e/support/game-flow.ts` exporting `createGame(page, name): Promise<{ joinUrl: string }>` and `joinGame(page, joinUrl, playerName): Promise<void>`, driven entirely through the UI (no direct DB access) — used by every e2e spec below
 
 **Checkpoint**: Shared styling tokens, the winning-line domain function, view context, and e2e test helper all exist.
 User story implementation can now begin.
@@ -101,15 +101,15 @@ User story implementation can now begin.
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T013 [P] [US1] Write `frontend/e2e/create-and-share.spec.ts` (both `mobile` and `desktop` projects) covering Acceptance Scenarios 1-4: autofocus on load, Enter-key submission, inline validation error on a blank/whitespace name, and the post-creation share screen (`data-testid="share-link"`, working `data-testid="copy-link-button"`, `data-testid="create-another-game"`) per contracts/ui-contract.md; include one keyboard-only scenario (Tab to the name field, type, submit with Enter — no `.click()` calls) per FR-011 — must fail against the current `home.html`
-- [ ] T014 [P] [US1] Write `frontend/tests/unit/copy-link.spec.ts`: fast-check property tests asserting that, for any arbitrary non-empty string passed in, the module calls a (mocked) `navigator.clipboard.writeText` with exactly that string and resolves to a success result — must fail (module doesn't exist yet)
+- [X] T013 [P] [US1] Write `frontend/e2e/create-and-share.spec.ts` (both `mobile` and `desktop` projects) covering Acceptance Scenarios 1-4: autofocus on load, Enter-key submission, inline validation error on a blank/whitespace name, and the post-creation share screen (`data-testid="share-link"`, working `data-testid="copy-link-button"`, `data-testid="create-another-game"`) per contracts/ui-contract.md; include one keyboard-only scenario (Tab to the name field, type, submit with Enter — no `.click()` calls) per FR-011 — must fail against the current `home.html`
+- [X] T014 [P] [US1] Write `frontend/tests/unit/copy-link.spec.ts`: fast-check property tests asserting that, for any arbitrary non-empty string passed in, the module calls a (mocked) `navigator.clipboard.writeText` with exactly that string and resolves to a success result — must fail (module doesn't exist yet)
 
 ### Implementation for User Story 1
 
-- [ ] T015 [US1] Implement `frontend/src/copy-link.ts`: a small typed function that reads the share link from a `data-share-link` attribute, calls `navigator.clipboard.writeText`, shows a success state on the triggering button, and falls back to leaving the link text selectable if the Clipboard API is unavailable (spec Assumptions) — depends on T014
-- [ ] T016 [US1] Restyle `backend/bingo/templates/bingo/home.html` per contracts/ui-contract.md: `autofocus` + `data-testid="game-name-input"` on the name field, `data-testid="create-game-submit"` on the button, an inline `role="alert"` error region next to the field, and — when a game was just created — a share block with `data-testid="share-link"`, a `data-testid="copy-link-button"` wired to `{% static 'bingo/dist/copy-link.js' %}` (via a `type="module"` `<script>` include in `base.html` or a page-specific block), and `data-testid="create-another-game"` linking back to a blank form
-- [ ] T017 [P] [US1] Add create-game/share-screen styles to `bingo.css`: form layout, ≥44×44px touch targets (FR-012), share-link/copy-button presentation (builds on T008's shared tokens)
-- [ ] T018 [US1] Extend `backend/tests/integration/test_bingo_views.py`'s `create_game` tests to assert the new `data-testid` anchors and inline-error markup render correctly (Django-level regression alongside the e2e check)
+- [X] T015 [US1] Implement `frontend/src/copy-link.ts`: a small typed function that reads the share link from a `data-share-link` attribute, calls `navigator.clipboard.writeText`, shows a success state on the triggering button, and falls back to leaving the link text selectable if the Clipboard API is unavailable (spec Assumptions) — depends on T014
+- [X] T016 [US1] Restyle `backend/bingo/templates/bingo/home.html` per contracts/ui-contract.md: `autofocus` + `data-testid="game-name-input"` on the name field, `data-testid="create-game-submit"` on the button, an inline `role="alert"` error region next to the field, and — when a game was just created — a share block with `data-testid="share-link"`, a `data-testid="copy-link-button"` wired to `{% static 'bingo/dist/copy-link.js' %}` (via a `type="module"` `<script>` include in `base.html` or a page-specific block), and `data-testid="create-another-game"` linking back to a blank form
+- [X] T017 [P] [US1] Add create-game/share-screen styles to `bingo.css`: form layout, ≥44×44px touch targets (FR-012), share-link/copy-button presentation (builds on T008's shared tokens)
+- [X] T018 [US1] Extend `backend/tests/integration/test_bingo_views.py`'s `create_game` tests to assert the new `data-testid` anchors and inline-error markup render correctly (Django-level regression alongside the e2e check)
 
 **Checkpoint**: User Story 1 is fully functional and independently testable — `npm run e2e -- create-and-share` passes on both projects.
 
@@ -125,13 +125,13 @@ User story implementation can now begin.
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T019 [P] [US2] Write `frontend/e2e/join.spec.ts` (both projects), using `createGame` from `game-flow.ts`, covering Acceptance Scenarios 1-3: game name visible + autofocus on load, Enter-key submission, inline validation error on a blank/whitespace name without losing the game-name context on screen, one keyboard-only scenario (Tab to the name field, submit with Enter) per FR-011, and an SC-001 timing assertion (wall-clock from opening the join link through successfully marking the player's first non-free square is under 10 seconds) — must fail against the current `join.html`
+- [X] T019 [P] [US2] Write `frontend/e2e/join.spec.ts` (both projects), using `createGame` from `game-flow.ts`, covering Acceptance Scenarios 1-3: game name visible + autofocus on load, Enter-key submission, inline validation error on a blank/whitespace name without losing the game-name context on screen, one keyboard-only scenario (Tab to the name field, submit with Enter) per FR-011, and an SC-001 timing assertion (wall-clock from opening the join link through successfully marking the player's first non-free square is under 10 seconds) — must fail against the current `join.html`
 
 ### Implementation for User Story 2
 
-- [ ] T020 [US2] Restyle `backend/bingo/templates/bingo/join.html` per contracts/ui-contract.md: `autofocus` + `data-testid="player-name-input"`, `data-testid="join-game-submit"`, and an inline `role="alert"` error region that keeps the game name heading visible above it
-- [ ] T021 [P] [US2] Add join-screen styles to `bingo.css` (reuses T008's shared tokens; adds join-form-specific layout, with the name input and submit button sized to ≥44×44px touch targets — FR-012)
-- [ ] T022 [US2] Extend `backend/tests/integration/test_bingo_views.py`'s `join_game` tests to assert the new markup anchors
+- [X] T020 [US2] Restyle `backend/bingo/templates/bingo/join.html` per contracts/ui-contract.md: `autofocus` + `data-testid="player-name-input"`, `data-testid="join-game-submit"`, and an inline `role="alert"` error region that keeps the game name heading visible above it
+- [X] T021 [P] [US2] Add join-screen styles to `bingo.css` (reuses T008's shared tokens; adds join-form-specific layout, with the name input and submit button sized to ≥44×44px touch targets — FR-012)
+- [X] T022 [US2] Extend `backend/tests/integration/test_bingo_views.py`'s `join_game` tests to assert the new markup anchors
 
 **Checkpoint**: User Stories 1 AND 2 both independently functional.
 
@@ -147,15 +147,15 @@ User story implementation can now begin.
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T023 [P] [US3] Write `frontend/e2e/play-and-win.spec.ts` (both projects), using `createGame`/`joinGame` from `game-flow.ts`, covering Acceptance Scenarios 1-5: tap → pending → marked transition, unmark, free-space cell never responds to taps, a rapid double-tap on the same cell only fires one toggle, and completing a line shows the overlay + highlighted line, then dismissing it reveals a read-only board with the line still highlighted; include an SC-002 timing assertion (the cell's pending indicator/disabled state is applied synchronously on click, asserted before awaiting the HTMX response, budgeted under 100ms) and one keyboard-only scenario (Tab to a cell and activate it with Enter/Space) per FR-011 — must fail against the current unstyled `board.html`
+- [X] T023 [P] [US3] Write `frontend/e2e/play-and-win.spec.ts` (both projects), using `createGame`/`joinGame` from `game-flow.ts`, covering Acceptance Scenarios 1-5: tap → pending → marked transition, unmark, free-space cell never responds to taps, a rapid double-tap on the same cell only fires one toggle, and completing a line shows the overlay + highlighted line, then dismissing it reveals a read-only board with the line still highlighted; include an SC-002 timing assertion (the cell's pending indicator/disabled state is applied synchronously on click, asserted before awaiting the HTMX response, budgeted under 100ms) and one keyboard-only scenario (Tab to a cell and activate it with Enter/Space) per FR-011 — must fail against the current unstyled `board.html`
 
 ### Implementation for User Story 3
 
-- [ ] T024 [US3] Restyle `backend/bingo/templates/bingo/board.html`: header block with `data-testid="game-name"`, `data-testid="player-name"`, and the win-condition reminder text (FR-005); `role="grid"` on the board container; wrap the whole board with `data-testid="board-readonly"` and (for non-winners) a finished-game notice naming the winner, both driven by the `is_winner`/`winning_positions` context from T011
-- [ ] T025 [US3] Update `backend/bingo/templates/bingo/partials/_square.html`: `role="gridcell"` + `data-testid="cell-{{ square.position }}"` on every cell; `hx-indicator` and `hx-disabled-elt="this"` for instant pending feedback and double-tap prevention (FR-010); `hx-swap="outerHTML transition:true"` for the mark/unmark animation (FR-008); omit `hx-post`/button semantics entirely for the center free-space cell, rendering it instead as a non-interactive element with `data-testid="free-space"` (FR-009); add `data-testid="winning-line"` when the square's position is in `winning_positions`
-- [ ] T026 [US3] Restyle `backend/bingo/templates/bingo/partials/_winner_banner.html` into the celebratory overlay: `data-testid="winner-overlay"` container shown only when the viewer is the winner, and a `data-testid="celebrate-dismiss"` control that closes the overlay via pure CSS/HTML (e.g. a checkbox- or `<details>`-driven toggle — no custom JS needed) to reveal the board underneath
-- [ ] T027 [US3] Add board/cell/overlay styles to `bingo.css`: the fixed 5×5 responsive square-cell grid (centered, max-width 700px on desktop; full-width with square cells on mobile — FR-006/FR-007), unmarked/marked/free/winning-line visual states with a 150-200ms transition (FR-008/FR-009), each cell sized to ≥44×44px even at the narrowest supported width (FR-012), and the overlay's presentation
-- [ ] T028 [US3] Extend `backend/tests/integration/test_bingo_views.py` to assert that a finished board's response marks the correct squares via `winning_positions`, and that `backend/tests/unit/test_domain.py`'s new `winning_lines()` tests (T009) pass against the implementation (T010)
+- [X] T024 [US3] Restyle `backend/bingo/templates/bingo/board.html`: header block with `data-testid="game-name"`, `data-testid="player-name"`, and the win-condition reminder text (FR-005); `role="grid"` on the board container; wrap the whole board with `data-testid="board-readonly"` and (for non-winners) a finished-game notice naming the winner, both driven by the `is_winner`/`winning_positions` context from T011
+- [X] T025 [US3] Update `backend/bingo/templates/bingo/partials/_square.html`: `role="gridcell"` + `data-testid="cell-{{ square.position }}"` on every cell; `hx-indicator` and `hx-disabled-elt="this"` for instant pending feedback and double-tap prevention (FR-010); `hx-swap="outerHTML transition:true"` for the mark/unmark animation (FR-008); omit `hx-post`/button semantics entirely for the center free-space cell, rendering it instead as a non-interactive element with `data-testid="free-space"` (FR-009); add `data-testid="winning-line"` when the square's position is in `winning_positions`
+- [X] T026 [US3] Restyle `backend/bingo/templates/bingo/partials/_winner_banner.html` into the celebratory overlay: `data-testid="winner-overlay"` container shown only when the viewer is the winner, and a `data-testid="celebrate-dismiss"` control that closes the overlay via pure CSS/HTML (e.g. a checkbox- or `<details>`-driven toggle — no custom JS needed) to reveal the board underneath
+- [X] T027 [US3] Add board/cell/overlay styles to `bingo.css`: the fixed 5×5 responsive square-cell grid (centered, max-width 700px on desktop; full-width with square cells on mobile — FR-006/FR-007), unmarked/marked/free/winning-line visual states with a 150-200ms transition (FR-008/FR-009), each cell sized to ≥44×44px even at the narrowest supported width (FR-012), and the overlay's presentation
+- [X] T028 [US3] Extend `backend/tests/integration/test_bingo_views.py` to assert that a finished board's response marks the correct squares via `winning_positions`, and that `backend/tests/unit/test_domain.py`'s new `winning_lines()` tests (T009) pass against the implementation (T010)
 
 **Checkpoint**: User Stories 1-3 independently functional — the core, repeated gameplay loop and its emotional payoff are complete.
 
@@ -171,14 +171,14 @@ User story implementation can now begin.
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T029 [P] [US4] Write `frontend/e2e/dead-ends.spec.ts` (both projects) covering Acceptance Scenarios 1-4: a non-winning participant's board shows the finished notice and is read-only (reuses T024's markup — this spec is the independent-test check for it), a join link for a finished game shows a finished message instead of a form, an emptied buzzword pool shows its own message, and a nonexistent game/board link shows a not-found message
+- [X] T029 [P] [US4] Write `frontend/e2e/dead-ends.spec.ts` (both projects) covering Acceptance Scenarios 1-4: a non-winning participant's board shows the finished notice and is read-only (reuses T024's markup — this spec is the independent-test check for it), a join link for a finished game shows a finished message instead of a form, an emptied buzzword pool shows its own message, and a nonexistent game/board link shows a not-found message
 
 ### Implementation for User Story 4
 
-- [ ] T030 [US4] Add `data-testid="game-finished-notice"` and `data-testid="no-buzzwords-notice"` markup to `join.html`'s existing `finished`/`insufficient_pool` template branches (the underlying logic already exists in `views.py`'s `join_game` — this is markup/styling only)
-- [ ] T031 [P] [US4] Add a `backend/bingo/templates/404.html` override with `data-testid="not-found-notice"` and a friendly "not found" message (FR-018), styled consistently with the rest of the app
-- [ ] T032 [P] [US4] Add empty-state/finished-state styles to `bingo.css`
-- [ ] T033 [US4] Extend `backend/tests/integration/test_bingo_views.py` to assert the not-found/finished/no-buzzwords markup renders correctly
+- [X] T030 [US4] Add `data-testid="game-finished-notice"` and `data-testid="no-buzzwords-notice"` markup to `join.html`'s existing `finished`/`insufficient_pool` template branches (the underlying logic already exists in `views.py`'s `join_game` — this is markup/styling only)
+- [X] T031 [P] [US4] Add a `backend/bingo/templates/404.html` override with `data-testid="not-found-notice"` and a friendly "not found" message (FR-018), styled consistently with the rest of the app
+- [X] T032 [P] [US4] Add empty-state/finished-state styles to `bingo.css`
+- [X] T033 [US4] Extend `backend/tests/integration/test_bingo_views.py` to assert the not-found/finished/no-buzzwords markup renders correctly
 
 **Checkpoint**: All four user stories independently functional — full spec coverage achieved.
 
@@ -188,11 +188,11 @@ User story implementation can now begin.
 
 **Purpose**: Improvements that span every user story.
 
-- [ ] T034 [P] Mirror the polished UX/testing setup into `docs/sphinx/frontend-ux.md` (constitution Documentation-First mitigation, per plan.md)
-- [ ] T035 [P] Add a `frontend-e2e` job to `.github/workflows/main.yaml`: set up Node, `npm ci` in `frontend/`, `npx playwright install --with-deps`, then `npm run test:unit` (fails the build below 100% coverage per T001a) and `npm run e2e` with `DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1` set for the `webServer`-spawned Django process (see T003) — wires FR-020/SC-007's completion gate, and the constitution's 100%-coverage requirement, into CI
-- [ ] T036 Run `specs/003-frontend-polish/quickstart.md` end-to-end locally and confirm every step passes
-- [ ] T037 [P] Keyboard-only and screen-reader pass across all four screens (Tab order, focus visibility, ARIA roles/labels on the grid/cells/status regions) per FR-011/FR-014, using contracts/ui-contract.md's anchors as the checklist; file follow-ups for any gap found
-- [ ] T038 [P] Manual color-contrast audit of `bingo.css`'s palette against WCAG 2.1 AA (FR-013); adjust colors as needed
+- [X] T034 [P] Mirror the polished UX/testing setup into `docs/sphinx/frontend-ux.md` (constitution Documentation-First mitigation, per plan.md)
+- [X] T035 [P] Add a `frontend-e2e` job to `.github/workflows/main.yaml`: set up Node, `npm ci` in `frontend/`, `npx playwright install --with-deps`, then `npm run test:unit` (fails the build below 100% coverage per T001a) and `npm run e2e` with `DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1` set for the `webServer`-spawned Django process (see T003) — wires FR-020/SC-007's completion gate, and the constitution's 100%-coverage requirement, into CI
+- [X] T036 Run `specs/003-frontend-polish/quickstart.md` end-to-end locally and confirm every step passes
+- [X] T037 [P] Keyboard-only and screen-reader pass across all four screens (Tab order, focus visibility, ARIA roles/labels on the grid/cells/status regions) per FR-011/FR-014, using contracts/ui-contract.md's anchors as the checklist; file follow-ups for any gap found
+- [X] T038 [P] Manual color-contrast audit of `bingo.css`'s palette against WCAG 2.1 AA (FR-013); adjust colors as needed
 
 ---
 

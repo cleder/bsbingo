@@ -56,10 +56,62 @@ jobs:
           POSTGRES_PORT: 5432
 
 
+  frontend-e2e:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: bsbingo
+          POSTGRES_USER: bsbingo
+          POSTGRES_PASSWORD: TESTPASSWORD
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    env:
+      DATABASE_URL: postgresql://bsbingo:TESTPASSWORD@localhost:5432/bsbingo
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: 5432
+      DJANGO_SECRET_KEY: test # pragma: allowlist secret
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@7f4fc3e22c37d6ff65e88745f38bd3157c663f7c # v4
+        with:
+          python-version: "3.14"
+      - name: Install uv and backend dependencies
+        run: |
+          pip install uv
+          uv sync --group test
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "20"
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+      - name: Install Playwright browsers
+        working-directory: frontend
+        run: npx playwright install --with-deps chromium
+      - name: TypeScript unit tests (100% coverage gate)
+        working-directory: frontend
+        run: npm run test:unit
+      - name: End-to-end tests
+        working-directory: frontend
+        run: npm run e2e
+
   build-backend-image:
     if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    needs: [check-lint-and-formatting, backend-test]
+    needs: [check-lint-and-formatting, backend-test, frontend-e2e]
     outputs:
       short-sha: ${{ steps.vars.outputs.short-sha }}
       branch-name: ${{ steps.vars.outputs.branch-name }}

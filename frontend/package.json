@@ -1,0 +1,37 @@
+{
+  "c8": {
+    "all": true,
+    "branches": 100,
+    "exclude": [
+      "dist/**",
+      "tests/**",
+      "e2e/**"
+    ],
+    "functions": 100,
+    "include": [
+      "src/**/*.ts"
+    ],
+    "lines": 100,
+    "reporter": [
+      "text",
+      "html"
+    ],
+    "src": "src",
+    "statements": 100
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0",
+    "c8": "^10.1.2",
+    "fast-check": "^3.22.0",
+    "typescript": "^5.6.0"
+  },
+  "name": "bsbingo-frontend",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "docs:screenshots": "playwright test e2e/docs-screenshots.spec.ts",
+    "e2e": "playwright test e2e",
+    "test:unit": "c8 --all --src src --100 playwright test tests/unit"
+  },
+  "version": "0.1.0"
+}

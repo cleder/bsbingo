@@ -20,8 +20,15 @@ Tiltfile
 Taskfile.yml
 *.md
 
-# Frontend -- built as a separate image
+# Frontend -- only the TS module's source + manifests are needed to compile
+# frontend/dist inside backend/Dockerfile's frontend-build stage; dist/,
+# node_modules/, and the Playwright/test-only files are never copied in.
 frontend
+!frontend/package.json
+!frontend/package-lock.json
+!frontend/tsconfig.json
+!frontend/src
+!frontend/src/**
 node_modules
 
 # Python build artifacts

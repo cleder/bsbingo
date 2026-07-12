@@ -3,22 +3,50 @@
 {% block title %}Join {{ game.name }} — Buzzword Bingo{% endblock %}
 
 {% block content %}
-<h1>Join "{{ game.name }}"</h1>
+<main class="page page-join">
+    <h1>Join "{{ game.name }}"</h1>
 
-{% if finished %}
-    <p>This game is no longer accepting participants — it has already finished.</p>
-{% elif insufficient_pool %}
-    <p>Not enough buzzwords are available to generate a board right now.</p>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Join game</button>
-    </form>
-{% else %}
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Join game</button>
-    </form>
-{% endif %}
+    {% if finished %}
+        <p data-testid="game-finished-notice">This game is no longer accepting participants — it has already finished.</p>
+    {% elif insufficient_pool %}
+        <section class="card">
+            <p data-testid="no-buzzwords-notice">Not enough buzzwords are available to generate a board right now.</p>
+            <form method="post" class="form" novalidate>
+                {% csrf_token %}
+                <label for="{{ form.name.id_for_label }}">Enter your name</label>
+                <input type="text"
+                       name="{{ form.name.html_name }}"
+                       id="{{ form.name.id_for_label }}"
+                       value="{{ form.name.value|default:'' }}"
+                       autofocus
+                       autocomplete="off"
+                       class="text-input"
+                       data-testid="player-name-input">
+                {% if form.name.errors %}
+                    <p role="alert" class="field-error">{{ form.name.errors.0 }}</p>
+                {% endif %}
+                <button type="submit" class="btn btn-primary" data-testid="join-game-submit">Join Game</button>
+            </form>
+        </section>
+    {% else %}
+        <section class="card">
+            <form method="post" class="form" novalidate>
+                {% csrf_token %}
+                <label for="{{ form.name.id_for_label }}">Enter your name</label>
+                <input type="text"
+                       name="{{ form.name.html_name }}"
+                       id="{{ form.name.id_for_label }}"
+                       value="{{ form.name.value|default:'' }}"
+                       autofocus
+                       autocomplete="off"
+                       class="text-input"
+                       data-testid="player-name-input">
+                {% if form.name.errors %}
+                    <p role="alert" class="field-error">{{ form.name.errors.0 }}</p>
+                {% endif %}
+                <button type="submit" class="btn btn-primary" data-testid="join-game-submit">Join Game</button>
+            </form>
+        </section>
+    {% endif %}
+</main>
 {% endblock %}

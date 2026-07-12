@@ -3,6 +3,7 @@
 **Table of Contents** *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [UI Contract: Frontend Polish & Mobile-First UX](#ui-contract-frontend-polish--mobile-first-ux)
+  - [Shared (every screen, `base.html`)](#shared-every-screen-basehtml)
   - [Home screen (`home.html`)](#home-screen-homehtml)
   - [Join screen (`join.html`)](#join-screen-joinhtml)
   - [Board screen (`board.html`)](#board-screen-boardhtml)
@@ -17,6 +18,12 @@ This feature adds no new HTTP endpoints — every screen is served by the four r
 What's new is a set of **stable markup anchors** (element roles, `id`s, and `data-testid` attributes) that both the restyled templates and the `frontend/e2e/` Playwright specs agree on, so tests target semantic, accessible selectors rather than CSS classes that are expected to change during polish.
 
 This is the contract implementers and test-authors both work from: templates MUST expose these anchors; Playwright specs MUST select elements by them (never by CSS class or visual position).
+
+## Shared (every screen, `base.html`)
+
+| Anchor | Element | Notes |
+|---|---|---|
+| `data-testid="theme-toggle"` | Light/dark toggle `<button>` | Wired to `theme-toggle.ts`; `data-theme="light"/"dark"` on `<html>` reflects the current choice, `aria-pressed` on the button mirrors it (dark mode addendum) |
 
 ## Home screen (`home.html`)
 
@@ -45,13 +52,13 @@ This is the contract implementers and test-authors both work from: templates MUS
 |---|---|---|
 | `data-testid="game-name"`, `data-testid="player-name"` | Header text | Always visible (FR-005) |
 | `role="grid"` on the board container; `role="gridcell"` on each `_square.html` button | 5×5 board | Semantic grid for screen readers (FR-006, FR-014) |
-| `data-testid="cell-{position}"` (0-24) | Each cell button | Stable regardless of which buzzword landed there — tests select by position, not text (FR-007–FR-010) |
+| `data-testid="cell-{position}"` (0-24, except the center — see `free-space` below) | Each non-free cell button | Stable regardless of which buzzword landed there — tests select by position, not text (FR-007–FR-010) |
 | `.marked` / absence of `.marked` (CSS class, existing) on a cell | Marked/unmarked visual state | Retained from 002; tests may assert on this class since it is functional, not purely cosmetic (FR-008) |
-| `data-testid="free-space"` | The center cell | Non-interactive; always shows marked (FR-009) |
+| `data-testid="free-space"` | The center cell | Non-interactive; always shows marked; takes the place of a `cell-12` testid (a cell can only carry one `data-testid`) (FR-009) |
 | `id="winner-banner"`, `role="status" aria-live="polite"` (existing, `_winner_banner.html`) | Out-of-band winner/finished notice region | Retained from 002 (FR-016) |
 | `data-testid="winner-overlay"` | The celebratory overlay shown to the winning player | Appears on the winning toggle response (FR-015) |
 | `data-testid="celebrate-dismiss"` | The "Celebrate" dismiss control on the overlay | Reveals the read-only, highlighted board underneath (FR-015, per Clarifications) |
-| `data-testid="winning-line"` | Class/attribute applied to each cell in the completed line | Used for the highlight (FR-015) |
+| `data-winning-line="true"` | Plain (non-testid) attribute applied to each cell in the completed line | A separate attribute, not a second `data-testid`, since `cell-{position}`/`free-space` already occupy that slot on the same element — used for the highlight (FR-015) |
 | `data-testid="board-readonly"` | Attribute/class on the board container once `game.status == "finished"` | Signals cells are inert for every participant (FR-016) |
 
 ## Not-found / error responses

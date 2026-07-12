@@ -80,3 +80,10 @@ env
 
 # complexipy cache
 .complexipy_cache/
+
+# frontend/ (Playwright + TypeScript tooling)
+frontend/node_modules/
+frontend/dist/
+frontend/test-results/
+frontend/playwright-report/
+frontend/coverage/

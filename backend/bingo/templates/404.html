@@ -1,0 +1,13 @@
+{% extends "bingo/base.html" %}
+
+{% block title %}Not Found — Buzzword Bingo{% endblock %}
+
+{% block content %}
+<main class="page page-not-found">
+    <section class="card">
+        <h1>Not Found</h1>
+        <p data-testid="not-found-notice">We couldn't find that game or board — the link may be mistyped or out of date.</p>
+        <p><a href="{% url 'bingo:create_game' %}">Start a new game</a></p>
+    </section>
+</main>
+{% endblock %}

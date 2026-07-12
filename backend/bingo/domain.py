@@ -44,6 +44,16 @@ def has_bingo(marked: frozenset[int]) -> bool:
     return any(line <= marked for line in WINNING_LINES)
 
 
+def winning_lines(marked: frozenset[int]) -> frozenset[int]:
+    """
+    Return the union of every winning line fully contained in `marked`.
+
+    Empty when no line is complete. Used to highlight the completed
+    row/column/diagonal on a finished board (FR-015).
+    """
+    return frozenset[int]().union(*(line for line in WINNING_LINES if line <= marked))
+
+
 class InsufficientBuzzwordPoolError(Exception):
     """Raised when fewer than `k` items are available to draw from `pool`."""
 

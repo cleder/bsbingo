@@ -1,0 +1,361 @@
+/* Buzzword Bingo — shared visual language (FR-011, FR-013, FR-019). */
+
+:root {
+  --color-bg: #fafaf9;
+  --color-surface: #ffffff;
+  --color-text: #1c1917;
+  --color-text-muted: #57534e;
+  --color-primary: #7c3aed;
+  --color-primary-contrast: #ffffff;
+  --color-border: #e7e5e4;
+  /* #16a34a only hit ~3.16:1 for bold ~16.8px text on --color-bg, short of
+     WCAG AA's 4.5:1 for normal text (it isn't large enough to qualify for
+     the 3:1 large-text minimum) -- darkened to clear 4.5:1. */
+  --color-success: #15803d;
+  --color-success-contrast: #ffffff;
+  --color-danger: #b91c1c;
+  --color-focus: #2563eb;
+  /* A distinct amber highlight for the winning line (FR-015) -- an earlier
+     design reused --color-success as an outline on a --color-primary
+     (marked-cell) background, which only hit ~1.73:1; a dedicated fill
+     color with dark text clears 8:1+ in both themes. */
+  --color-winning: #f59e0b;
+  --color-winning-contrast: #1c1917;
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+
+  --shadow-sm: 0 1px 2px rgba(28, 25, 23, 0.08);
+  --shadow-md: 0 4px 16px rgba(28, 25, 23, 0.12);
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-size-base: 1.05rem;
+  --font-size-lg: 1.3rem;
+  --font-size-xl: 1.75rem;
+
+  --transition-mark: 180ms ease;
+
+  /* Vertical space content must clear so it never renders under the fixed
+     .theme-toggle button (44px + its top offset + a gap below it) -- a
+     centered heading (e.g. a long game name) can be wide enough to reach
+     the same top-right corner the button occupies otherwise. */
+  --toggle-clearance: calc(44px + var(--space-3) * 2);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #1c1917;
+    --color-surface: #292524;
+    --color-text: #fafaf9;
+    --color-text-muted: #d6d3d1;
+    /* #44403c only hit ~1.7:1 against --color-bg -- below WCAG 1.4.11's 3:1
+       non-text contrast minimum for a UI component boundary (this border is
+       the *only* visual cue for an input's edges against a same-color
+       background). #78716c clears it with margin (~3.65:1). */
+    --color-border: #78716c;
+    /* #15803d (the light-mode value) only hits ~3.49:1 on this darker bg;
+       lightened so status text still clears 4.5:1 (~7.68:1 here). */
+    --color-success: #22c55e;
+  }
+}
+
+/* An explicit choice from the theme-toggle button (`theme-toggle.ts`, which
+   sets `data-theme` on <html>) always wins over the OS's prefers-color-scheme
+   above -- the attribute selector's higher specificity guarantees that
+   regardless of source order. Values are duplicated from the two blocks
+   above rather than shared, since a plain `:root` can't be selected from
+   inside and outside a media query in one rule. */
+:root[data-theme='dark'] {
+  --color-bg: #1c1917;
+  --color-surface: #292524;
+  --color-text: #fafaf9;
+  --color-text-muted: #d6d3d1;
+  --color-border: #78716c;
+  --color-success: #22c55e;
+}
+
+:root[data-theme='light'] {
+  --color-bg: #fafaf9;
+  --color-surface: #ffffff;
+  --color-text: #1c1917;
+  --color-text-muted: #57534e;
+  --color-border: #e7e5e4;
+  --color-success: #15803d;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+  padding: var(--toggle-clearance) var(--space-3) var(--space-4);
+}
+
+h1,
+h2,
+p {
+  margin: 0 0 var(--space-3);
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: var(--color-primary);
+}
+
+/* A single, consistent visible focus style for every interactive element on
+   every screen (FR-011) -- keyboard users always know where they are. */
+:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Layout shared by every screen's top-level <main> (create/join/board). */
+.page {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-4);
+  margin-top: var(--space-3);
+}
+
+/* Create-game / share-screen (User Story 1). */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.form label {
+  font-weight: 600;
+}
+
+.text-input {
+  width: 100%;
+  min-height: 44px;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+}
+
+.btn {
+  min-height: 44px;
+  min-width: 44px;
+  padding: var(--space-2) var(--space-4);
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+}
+
+.field-error {
+  color: var(--color-danger);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.share-link-row {
+  word-break: break-all;
+  background: var(--color-bg);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+}
+
+.status-message {
+  min-height: 1.2em;
+  color: var(--color-success);
+  font-weight: 600;
+}
+
+/* Join screen (User Story 2) -- reuses .card/.form/.text-input/.btn above;
+   the join form's fields already meet the >=44x44px touch target via those
+   shared rules (FR-012). */
+.page-join h1 {
+  word-break: break-word;
+}
+
+/* Board screen (User Story 3). */
+.page-board {
+  max-width: 700px;
+}
+
+.board-header {
+  text-align: center;
+}
+
+.win-condition {
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+}
+
+.board {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.board-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--space-2);
+}
+
+.square {
+  aspect-ratio: 1 / 1;
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-1);
+  font-size: 0.85rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition:
+    background-color var(--transition-mark),
+    color var(--transition-mark),
+    transform var(--transition-mark);
+}
+
+.square:disabled {
+  cursor: default;
+}
+
+/* Instant pending feedback (FR-010) -- htmx adds this class synchronously
+   via hx-indicator="this" the moment a request starts, independent of how
+   long the server actually takes to respond. */
+.square.htmx-request {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.square.marked {
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+  border-color: var(--color-primary);
+  transform: scale(1.03);
+}
+
+.square[data-testid='free-space'] {
+  /* The free space is always `marked` (server-side), so `.square.marked`'s
+     white text color would otherwise carry over -- it must be reset
+     explicitly here, since this rule only overrides the background. */
+  background: var(--color-bg);
+  color: var(--color-text);
+  border-style: dashed;
+  font-weight: 700;
+}
+
+.square[data-winning-line='true'] {
+  /* A dedicated fill, not just an outline over the marked (purple) cell
+     background -- see the --color-winning definition above for why. */
+  background: var(--color-winning);
+  color: var(--color-winning-contrast);
+  border-color: var(--color-winning);
+}
+
+/* Winner overlay (User Story 3) -- a checkbox-driven CSS toggle, no custom
+   JS needed to dismiss it (FR-015). */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.winner-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: var(--color-primary);
+  color: var(--color-primary-contrast);
+  text-align: center;
+}
+
+/* .btn-primary's own background is --color-primary -- identical to the
+   overlay behind it, so the button would otherwise be invisible (just bold
+   text, no visible button chrome). Invert it here instead. */
+.winner-overlay .btn-primary {
+  background: var(--color-primary-contrast);
+  color: var(--color-primary);
+  margin-top: var(--space-2);
+}
+
+.celebrate-checkbox:checked ~ .winner-overlay {
+  display: none;
+}
+
+/* Light/dark theme toggle -- visible on every screen (base.html). */
+.theme-toggle {
+  position: fixed;
+  top: var(--space-3);
+  right: var(--space-3);
+  z-index: 200;
+  min-height: 44px;
+  min-width: 44px;
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--font-size-lg);
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* Empty/finished/not-found states (User Story 4) -- reuse .card/.page above;
+   no state-specific layout is needed beyond the shared card treatment. */
+.page-not-found {
+  text-align: center;
+}

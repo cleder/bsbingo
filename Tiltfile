@@ -17,6 +17,11 @@ docker_build(
     live_update=[
         sync("./backend/config", "/app/src/config"),
         sync("./backend/bingo", "/app/src/bingo"),
+        # Compiled TS output (`cd frontend && npm run build`), served via
+        # STATICFILES_DIRS at /app/frontend/dist (see backend/Dockerfile's
+        # frontend-build stage, which bakes this in for a from-scratch
+        # image build too).
+        sync("./frontend/dist", "/app/frontend/dist"),
     ],
 )
 
