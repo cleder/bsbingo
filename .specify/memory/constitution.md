@@ -63,7 +63,7 @@ We prefer functional programming patterns.
 ### V. Strong Typing & Safe Types
 
 All Python code MUST be fully type-annotated; untyped function signatures and untyped module-level values are not permitted.
-Static type checking MUST be enforced with `pyrefly` and `ty` in their strictest available settings, run in CI, failing the build on any error.
+Static type checking MUST be enforced with `zuban`, `pyrefly` and `ty` in their strictest available settings, run in CI, failing the build on any error.
 Prefer precise, narrow types (enums, `NewType`, `TypedDict`, dataclasses with `Final`/`Literal` fields) over `Any`, untyped `dict`/`list`, or stringly-typed values — illegal states MUST be unrepresentable in the type system rather than guarded against only at runtime.
 Any `# type: ignore` or equivalent suppression MUST carry an inline comment explaining why the suppression is necessary.
 
