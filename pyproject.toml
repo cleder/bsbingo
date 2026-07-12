@@ -3,9 +3,12 @@ test = [
     "deptry>=0.25.1,<0.26.0",
     "django-stubs>=6.0",
     "hypothesis[django]>=6.156.6",
+    "pyrefly>=1.1.1,<2.0.0",
     "pytest-cov>=7.0.0",
     "pytest-django>=4.12.0",
     "pytest>=9.1.1",
+    "ty>=0.0.58,<1.0.0",
+    "zuban>=0.9.0,<1.0.0",
 ]
 
 [project]
@@ -105,3 +108,32 @@ unused-type-ignore-comment = "error"
 
 [tool.uv]
 add-bounds = "major"
+
+[tool.zuban]
+allow_untyped_globals = false
+check_untyped_defs = false
+disallow_any_generics = true
+disallow_incomplete_defs = true
+disallow_untyped_calls = true
+disallow_untyped_decorators = true
+disallow_untyped_defs = true
+enable_error_code = [
+    "ignore-without-code",
+]
+exclude_gitignore = true
+follow_untyped_imports = true
+ignore_errors = false
+ignore_missing_imports = false
+implicit_reexport = false
+mypy_path = "backend"
+no_implicit_optional = true
+show_error_codes = true
+strict = true
+strict_equality = true
+strict_optional = true
+warn_no_return = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unreachable = true
+warn_unused_configs = true
+warn_unused_ignores = true

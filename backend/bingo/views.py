@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import random
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, NotRequired, TypedDict
 
 from django.db import transaction
 from django.http import (
@@ -24,8 +24,46 @@ from bingo.models import Board, BoardSquare, Buzzword, Game, GameStatus, Player
 if TYPE_CHECKING:
     from uuid import UUID
 
+    from django.db.models.query import QuerySet
+
 CENTER_POSITION = 12
 BOARD_WORD_COUNT = 24
+
+
+class _HomeContext(TypedDict):
+    """Template context for `bingo/home.html` (the create-game form)."""
+
+    form: GameNameForm
+    game: NotRequired[Game]
+
+
+class _JoinContext(TypedDict):
+    """Template context for `bingo/join.html` (the join form)."""
+
+    game: Game
+    form: NotRequired[DisplayNameForm]
+    finished: NotRequired[bool]
+    insufficient_pool: NotRequired[bool]
+
+
+class _BoardContext(TypedDict):
+    """Template context for `bingo/board.html` (one participant's board)."""
+
+    board: Board
+    squares: QuerySet[BoardSquare]
+    game: Game
+
+
+class _SquareContext(TypedDict):
+    """Template context for `bingo/partials/_square.html`."""
+
+    square: BoardSquare
+
+
+class _WinnerBannerContext(TypedDict):
+    """Template context for `bingo/partials/_winner_banner.html`."""
+
+    game: Game
 
 
 def create_game(request: HttpRequest) -> HttpResponse:
@@ -33,20 +71,24 @@ def create_game(request: HttpRequest) -> HttpResponse:
     if request.method == "POST":
         form = GameNameForm(request.POST)
         if form.is_valid():
-            game = Game.objects.create(name=form.cleaned_data["name"])
-            context = {"form": GameNameForm(), "game": game}
+            game: Game = Game.objects.create(name=form.cleaned_data["name"])
+            context: _HomeContext = {"form": GameNameForm(), "game": game}
             return render(request, "bingo/home.html", context)
     else:
         form = GameNameForm()
-    return render(request, "bingo/home.html", {"form": form})
+    return render(request, "bingo/home.html", _HomeContext(form=form))
 
 
 def join_game(request: HttpRequest, game_id: UUID) -> HttpResponse:
     """Render/handle the join form for one game (FR-003-FR-007)."""
-    game = get_object_or_404(Game, pk=game_id)
+    game: Game = get_object_or_404(Game, pk=game_id)
 
     if game.status == GameStatus.FINISHED:
-        return render(request, "bingo/join.html", {"game": game, "finished": True})
+        return render(
+            request,
+            "bingo/join.html",
+            _JoinContext(game=game, finished=True),
+        )
 
     if request.method == "POST":
         form = DisplayNameForm(request.POST)
@@ -61,7 +103,11 @@ def join_game(request: HttpRequest, game_id: UUID) -> HttpResponse:
                     random.SystemRandom(),
                 )
             except InsufficientBuzzwordPoolError:
-                context = {"game": game, "form": form, "insufficient_pool": True}
+                context: _JoinContext = {
+                    "game": game,
+                    "form": form,
+                    "insufficient_pool": True,
+                }
                 return render(request, "bingo/join.html", context)
 
             with transaction.atomic():
@@ -70,7 +116,7 @@ def join_game(request: HttpRequest, game_id: UUID) -> HttpResponse:
                     return render(
                         request,
                         "bingo/join.html",
-                        {"game": locked_game, "finished": True},
+                        _JoinContext(game=locked_game, finished=True),
                     )
 
                 player = Player.objects.create(
@@ -101,15 +147,17 @@ def join_game(request: HttpRequest, game_id: UUID) -> HttpResponse:
     else:
         form = DisplayNameForm()
 
-    return render(request, "bingo/join.html", {"game": game, "form": form})
+    return render(request, "bingo/join.html", _JoinContext(game=game, form=form))
 
 
 def view_board(request: HttpRequest, board_id: UUID) -> HttpResponse:
     """Render one participant's board (FR-012)."""
-    board = get_object_or_404(Board, pk=board_id)
-    squares = BoardSquare.objects.filter(board=board).order_by("position")
-    game = board.player.game
-    context = {"board": board, "squares": squares, "game": game}
+    board: Board = get_object_or_404(Board, pk=board_id)
+    squares: QuerySet[BoardSquare] = BoardSquare.objects.filter(board=board).order_by(
+        "position"
+    )
+    game: Game = board.player.game
+    context: _BoardContext = {"board": board, "squares": squares, "game": game}
     return render(request, "bingo/board.html", context)
 
 
@@ -118,20 +166,24 @@ def toggle_cell(request: HttpRequest, board_id: UUID, cell_id: UUID) -> HttpResp
     if request.method != "POST":
         return HttpResponseNotAllowed(["POST"])
 
-    board = get_object_or_404(Board, pk=board_id)
-    square = get_object_or_404(BoardSquare, pk=cell_id, board=board)
-    game = board.player.game
+    board: Board = get_object_or_404(Board, pk=board_id)
+    square: BoardSquare = get_object_or_404(BoardSquare, pk=cell_id, board=board)
+    game: Game = board.player.game
 
     if game.status == GameStatus.FINISHED:
         square_fragment = render_to_string(
             "bingo/partials/_square.html",
-            {"square": square},
+            _SquareContext(square=square),
             request=request,
         )
         return HttpResponseForbidden(square_fragment)
 
     if square.position == CENTER_POSITION:
-        return render(request, "bingo/partials/_square.html", {"square": square})
+        return render(
+            request,
+            "bingo/partials/_square.html",
+            _SquareContext(square=square),
+        )
 
     square.marked = not square.marked
     square.save(update_fields=["marked"])
@@ -145,7 +197,7 @@ def toggle_cell(request: HttpRequest, board_id: UUID, cell_id: UUID) -> HttpResp
 
     square_fragment = render_to_string(
         "bingo/partials/_square.html",
-        {"square": square},
+        _SquareContext(square=square),
         request=request,
     )
 
@@ -160,7 +212,7 @@ def toggle_cell(request: HttpRequest, board_id: UUID, cell_id: UUID) -> HttpResp
 
     banner_fragment = render_to_string(
         "bingo/partials/_winner_banner.html",
-        {"game": game},
+        _WinnerBannerContext(game=game),
         request=request,
     )
     return HttpResponse(square_fragment + banner_fragment)
