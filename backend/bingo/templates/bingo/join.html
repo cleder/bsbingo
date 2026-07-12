@@ -1,0 +1,24 @@
+{% extends "bingo/base.html" %}
+
+{% block title %}Join {{ game.name }} — Buzzword Bingo{% endblock %}
+
+{% block content %}
+<h1>Join "{{ game.name }}"</h1>
+
+{% if finished %}
+    <p>This game is no longer accepting participants — it has already finished.</p>
+{% elif insufficient_pool %}
+    <p>Not enough buzzwords are available to generate a board right now.</p>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Join game</button>
+    </form>
+{% else %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Join game</button>
+    </form>
+{% endif %}
+{% endblock %}

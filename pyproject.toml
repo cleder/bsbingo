@@ -1,23 +1,56 @@
-[project]
-name = "bsbingo"
-version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
-requires-python = ">=3.14"
-dependencies = [
-    "django>=6.0.7",
-    "django-htmx>=1.27.0",
-    "psycopg[binary,pool]>=3.3.4",
-    "social-auth-app-django>=6.0.0",
-]
-
 [dependency-groups]
 test = [
+    "deptry>=0.25.1,<0.26.0",
+    "django-stubs>=6.0",
     "hypothesis[django]>=6.156.6",
-    "pytest>=9.1.1",
+    "pyrefly>=1.1.1,<2.0.0",
+    "pytest-cov>=7.0.0",
     "pytest-django>=4.12.0",
+    "pytest>=9.1.1",
+    "ty>=0.0.58,<1.0.0",
+    "zuban>=0.9.0,<1.0.0",
 ]
+
+[project]
+dependencies = [
+    "django-htmx>=1.27.0",
+    "django>=6.0.7",
+    "gunicorn>=23.0.0",
+    "psycopg[binary,pool]>=3.3.4",
+    "social-auth-app-django>=6.0.0",
+    "uvicorn-worker>=0.4.0",
+    "uvicorn>=0.38.0",
+]
+description = "Add your description here"
+name = "bsbingo"
+readme = "README.md"
+requires-python = ">=3.14"
+version = "0.1.0"
+
+[tool.pyrefly]
+preset = "strict"
+project-excludes = [
+    "**/migrations/*.py",
+    "tasks.py",
+]
+project-includes = [
+    "**/*.ipynb",
+    "**/*.py*",
+]
+search-path = [
+    "backend",
+]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings.test"
+pythonpath = [
+    "backend",
+]
+
 [tool.ruff]
+extend-exclude = [
+    "tasks.py",
+]
 fix = true
 line-length = 88
 
@@ -30,7 +63,6 @@ extend-safe-fixes = [
     "UP047",
 ]
 ignore = [
-    "ANN401",
     "COM812",
     "D203",
     "D212",
@@ -38,21 +70,70 @@ ignore = [
 select = [
     "ALL",
 ]
-[tool.rumdl]
-exclude = [
-    ".git",
-    ".github",
-    "build",
-    "dist",
-    "node_modules",
-    "vendor",
-]
-respect-gitignore = true
 
-[tool.rumdl.MD013]
-line-length = 0
-reflow = true
-reflow-mode = "sentence-per-line"
+[tool.ruff.lint.per-file-ignores]
+"backend/*/migrations/*.py" = [
+    "D100",
+    "D101",
+    "E501",
+    "RUF012",
+]
+"backend/tests/**" = [
+    "ANN001",
+    "ANN201",
+    "ARG001",
+    "D100",
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "INP001",
+    "PLR2004",
+    "S101",
+    "S311",
+]
+"docs/sphinx/conf.py" = [
+    "INP001",
+]
+
+[tool.ty.rules]
+missing-override-decorator = "ignore"
+missing-type-argument = "error"
+possibly-missing-attribute = "error"
+possibly-missing-import = "error"
+possibly-unresolved-reference = "error"
+redundant-cast = "error"
+unused-ignore-comment = "error"
+unused-type-ignore-comment = "error"
 
 [tool.uv]
 add-bounds = "major"
+
+[tool.zuban]
+allow_untyped_globals = false
+check_untyped_defs = false
+disallow_any_generics = true
+disallow_incomplete_defs = true
+disallow_untyped_calls = true
+disallow_untyped_decorators = true
+disallow_untyped_defs = true
+enable_error_code = [
+    "ignore-without-code",
+]
+exclude_gitignore = true
+follow_untyped_imports = true
+ignore_errors = false
+ignore_missing_imports = false
+implicit_reexport = false
+mypy_path = "backend"
+no_implicit_optional = true
+show_error_codes = true
+strict = true
+strict_equality = true
+strict_optional = true
+warn_no_return = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unreachable = true
+warn_unused_configs = true
+warn_unused_ignores = true

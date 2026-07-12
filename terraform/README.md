@@ -1,17 +1,26 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents** *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Terraform](#terraform)
+  - [Directory Structure](#directory-structure)
+  - [Setup Instructions](#setup-instructions)
+    - [Step 1: AWS Configuration](#step-1-aws-configuration)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Terraform
 
-This directory contains the Terraform configurations for the Scaf project. The
-configurations are organized into several directories, each serving a specific
-purpose. Below is a brief overview of each directory and instructions on how to
-run the Terraform configurations.
+This directory contains the Terraform configurations for the Scaf project.
+The configurations are organized into several directories, each serving a specific purpose.
+Below is a brief overview of each directory and instructions on how to run the Terraform configurations.
 
 ## Directory Structure
 
-- **bootstrap**: Bootstraps the Terraform state in an S3 bucket and a DynamoDB
-  table. This configuration contains the states for all environments and only
-  needs to be run once.
+- **bootstrap**: Bootstraps the Terraform state in an S3 bucket and a DynamoDB table.
+  This configuration contains the states for all environments and only needs to be run once.
 
-- **github**: Sets up a GitHub OIDC provider to allow GitHub to push container
+- **GitHub**: Sets up a GitHub OIDC provider to allow GitHub to push container
   images to ECR repositories.
 
 - **modules**: Contains a base module that is used by all environments.
@@ -26,11 +35,11 @@ run the Terraform configurations.
 
 ### Step 1: AWS Configuration
 
-Ensure that you have installed AWS CLI version 2, as AWS SSO support is only
-available in version 2 and above. Create a new AWS profile in `~/.aws/config`.
+Ensure that you have installed AWS CLI version 2, as AWS SSO support is only available in version 2 and above.
+Create a new AWS profile in `~/.aws/config`.
 Here's an example of the `~/.aws/config` profile:
 
-```
+```text
 [profile scaf]
 sso_start_url = https://sixfeetup.awsapps.com/start
 sso_region = us-east-1
@@ -40,23 +49,23 @@ region = us-east-1
 output = json
 ```
 
-Note the `sso_role_name` setting above. Make sure to use a role that provides
-you with the necessary permissions to deploy infrastructure on your AWS account.
+Note the `sso_role_name` setting above.
+Make sure to use a role that provides you with the necessary permissions to deploy infrastructure on your AWS account.
 
 Export the `AWS_PROFILE` environment variable:
 
-```
+```text
 $ export AWS_PROFILE=scaf
 ```
+
 Then, to deploy to sandbox you can run:
 
-```
+```text
 $ task deploy-sandbox
 ```
 
 TODO: replace with automation between the environment creation and the argocd bootstrap:
 
 
+```text
 ```
-
-

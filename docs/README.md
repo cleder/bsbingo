@@ -1,16 +1,21 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents** *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Project Documentation](#project-documentation)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Project Documentation
 
-You are encouraged to add in this directory all documentation
-useful for others (and you in future) to understand better
-how the project work and to help developers to prepare their environment.
+You are encouraged to add in this directory all documentation useful for others (and you in future) to understand better how the project work and to help developers to prepare their environment.
 
 Examples (not all possibilities) of good things that can be documented:
 
 - How to configure development environment using third-party
-applications and integrations (e.g. Slack, Discord, external
-APIs, etc);
+applications and integrations (e.g. Slack, Discord, external APIs, etc);
 - How to prepare the environment to accomplish a specific task
-that demands business knowledge and populate data in multible tables;
+that demands business knowledge and populate data in multiple tables;
 - Glossary of business terms and actions that are not obvious
 to the general public;
 - Anything that you needed to research inside the project and

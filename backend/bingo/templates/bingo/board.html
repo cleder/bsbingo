@@ -1,0 +1,15 @@
+{% extends "bingo/base.html" %}
+
+{% block title %}Your Board — Buzzword Bingo{% endblock %}
+
+{% block content %}
+<h1>Your Bingo Board</h1>
+
+{% include "bingo/partials/_winner_banner.html" %}
+
+<div class="board">
+    {% for square in squares %}
+        {% include "bingo/partials/_square.html" %}
+    {% endfor %}
+</div>
+{% endblock %}

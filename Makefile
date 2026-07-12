@@ -26,15 +26,9 @@ check-lint-and-formatting: .git/hooks/pre-commit ## Execute check of lint and fo
 backend-test: ## Execute backend tests
 ifeq ($(CI),true)
 	pip install uv; \
-	cd backend; \
-	uv venv ./venv; \
-	. ./venv/bin/activate; \
-	uv pip install \
-		-r requirements/production.txt \
-		-r requirements/tests.txt; \
-	cd scafman; \
+	uv sync --group test; \
 	export DJANGO_SECRET_KEY="test"; \
-	pytest --cov=./ --cov-report html --ds=config.settings.test
+	uv run python -m pytest --cov=backend --cov-report html --ds=config.settings.test
 else
 	$(KUBECTL_EXEC_BACKEND) -c "cd bsbingo && pytest --cov=./ --cov-report html --ds=config.settings.test"
 endif
@@ -164,6 +158,6 @@ help: ## Show the list of all the commands and their help text
 		/^## .*/ {match($$0, "## (.+)$$"); txt=substr($$0,4,RLENGTH);printf "\n\033[33m%s\033[0m\n", txt ; target=""} \
 	' $(MAKEFILE_LIST)
 
-.PHONY: help check-lint-and-formatting ci ensure-uv secure build build-dev outdated pipdeptree compile destroy-data load-dump clean clean-dev squeaky_clean update check-sandbox-release check-staging-release check-prod-release
+.PHONY: help check-lint-and-formatting ci ensure-uv secure build build-dev outdated pipdeptree compile destroy-data load-dump clean clean-dev squeaky_clean update check-sandbox-release check-staging-release check-prod-release test backend-test setup docs serve-docs shell-backend sandbox-secrets debug-sandbox-secrets staging-secrets debug-staging-secrets prod-secrets debug-prod-secrets secrets compile-frontend init-frontend-dependencies
 
 .DEFAULT_GOAL := help

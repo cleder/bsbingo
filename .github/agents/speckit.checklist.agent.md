@@ -2,6 +2,18 @@
 description: Generate a custom checklist for the current feature based on user requirements.
 ---
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Checklist Purpose: "Unit Tests for English"](#checklist-purpose-unit-tests-for-english)
+- [User Input](#user-input)
+- [Execution Steps](#execution-steps)
+- [Example Checklist Types & Sample Items](#example-checklist-types--sample-items)
+- [Anti-Examples: What NOT To Do](#anti-examples-what-not-to-do)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 ## Checklist Purpose: "Unit Tests for English"
 
 **CRITICAL CONCEPT**: Checklists are **UNIT TESTS FOR REQUIREMENTS WRITING** - they validate the quality, clarity, and completeness of requirements in a given domain.

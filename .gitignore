@@ -12,6 +12,13 @@ dist/
 
 # Compiled Python bytecode
 *.py[cod]
+__pycache__/
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+htmlcov/
+db.sqlite3
 
 # Log files
 *.log
@@ -70,3 +77,6 @@ env
 # ignore .direnv
 .direnv/
 .envrc
+
+# complexipy cache
+.complexipy_cache/

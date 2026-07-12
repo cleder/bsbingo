@@ -1,16 +1,27 @@
 <!--
 Sync Impact Report:
-- Version change: 1.0.0 -> 1.1.1 (Added Strong Typing principle and python-socialauth requirement)
-- Modified principles: Added Principle V — Strong Typing & Safe Types
-- Added sections: Strong Typing & Safe Types, authentication policy
+- Version change: 1.1.1 -> 1.2.0
+- Modified principles: Completed Principle V — Strong Typing & Safe Types (the v1.1.1
+  Sync Impact Report claimed this principle was added, but the Core Principles body
+  only ever contained I-IV; this amendment actually drafts and inserts the missing
+  section rather than just updating metadata).
+- Added sections: Principle V full text (Strong Typing & Safe Types); a Technology &
+  Constraints line naming `pyrefly`/`ty` as the enforced static typing toolchain.
 - Removed sections: None
 - Templates requiring updates:
-  - .specify/templates/tasks-template.md (⚠ pending - add strict typing configuration task)
-  - .specify/templates/plan-template.md (✅ verified)
-  - .specify/templates/spec-template.md (⚠ pending - include type safety requirements)
+  - .specify/templates/tasks-template.md (✅ already includes a strict-typing setup
+    task — no change needed)
+  - .specify/templates/plan-template.md (✅ verified — Constitution Check is filled
+    dynamically per plan run, no static typing-specific text required)
+  - .specify/templates/spec-template.md (✅ already includes an "illegal states
+    unrepresentable through strict static typing" requirement — no change needed)
 - Follow-up TODOs:
-  - Update CI to run `pyrefly` and `ty` with strictest settings and document the toolchain.
-  - Ensure developer guidance for static typing is added to onboarding documentation.
+  - Wire `pyrefly`/`ty` strict-mode enforcement into CI (`.github/workflows/main.yaml`)
+    — not yet implemented in any feature branch as of this amendment.
+  - Add developer-facing onboarding documentation for the static typing toolchain.
+- Note: this amendment corrects a governance drift where v1.1.1's own changelog
+  claimed work that was never actually merged into the ratified body — surfaced by
+  `/speckit-analyze` finding C2 on feature 001-django-postgresql-backend.
 -->
 
 # Bullshit Bingo Constitution
@@ -49,7 +60,12 @@ User and developer documentation must be kept up-to-date in Sphinx.
 We prefer functional programming patterns.
 <!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
 
+### V. Strong Typing & Safe Types
 
+All Python code MUST be fully type-annotated; untyped function signatures and untyped module-level values are not permitted.
+Static type checking MUST be enforced with `pyrefly` and `ty` in their strictest available settings, run in CI, failing the build on any error.
+Prefer precise, narrow types (enums, `NewType`, `TypedDict`, dataclasses with `Final`/`Literal` fields) over `Any`, untyped `dict`/`list`, or stringly-typed values — illegal states MUST be unrepresentable in the type system rather than guarded against only at runtime.
+Any `# type: ignore` or equivalent suppression MUST carry an inline comment explaining why the suppression is necessary.
 
 ## Technology & Constraints
 
@@ -60,6 +76,7 @@ Authentication uses `python-social-auth` for identity integration and social log
 The frontend is built with `HTMX`.
 Do not introduce any other JavaScript frameworks or libraries; if custom code has to be written for the frontend, it must be written with TypeScript and have 100% test coverage.
 The documentation is built with `MyST` and `Sphinx`.
+Static typing is enforced with `pyrefly` and `ty`, run in their strictest settings.
 <!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
 
 ## Development Workflow
@@ -78,5 +95,5 @@ Amendments require a version bump and documentation.
 All PRs must verify compliance.
 <!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
 
-**Version**: 1.1.1 | **Ratified**: 2025-12-10 | **Last Amended**: 2026-07-11
+**Version**: 1.2.0 | **Ratified**: 2025-12-10 | **Last Amended**: 2026-07-11
 <!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->

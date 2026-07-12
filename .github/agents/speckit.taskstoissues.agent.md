@@ -3,6 +3,15 @@ description: Convert existing tasks into actionable, dependency-ordered GitHub i
 tools: ['GitHub/GitHub-mcp-server/issue_write']
 ---
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [User Input](#user-input)
+- [Outline](#outline)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 ## User Input
 
 ```text

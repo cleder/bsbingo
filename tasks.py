@@ -8,9 +8,10 @@ import subprocess
 try:
     # Inspired by
     # https://github.com/django/django/blob/master/django/utils/crypto.py
-    random = random.SystemRandom()
+    random_instance = random.SystemRandom()
     using_sysrandom = True
 except NotImplementedError:
+    random_instance = random
     using_sysrandom = False
 
 TERMINATOR = "\x1b[0m"
@@ -82,6 +83,7 @@ def generate_random_string(
     Example:
         opting out for 50 symbol-long, [a-z][A-Z][0-9] string
         would yield log_2((26+26+50)^50) ~= 334 bit strength.
+
     """
     if not using_sysrandom:
         return None
@@ -97,7 +99,7 @@ def generate_random_string(
         unsuitable = {"'", '"', "\\", "$"}
         suitable = all_punctuation.difference(unsuitable)
         symbols += "".join(suitable)
-    return "".join([random.choice(symbols) for _ in range(length)])
+    return "".join([random_instance.choice(symbols) for _ in range(length)])
 
 
 def set_flag(file_path, flag, value=None, formatted=None, *args, **kwargs):
@@ -106,7 +108,7 @@ def set_flag(file_path, flag, value=None, formatted=None, *args, **kwargs):
         if random_string is None:
             print(
                 "We couldn't find a secure pseudo-random number generator on your system. "
-                "Please, make sure to manually {} later.".format(flag)
+                f"Please, make sure to manually {flag} later."
             )
             random_string = flag
         if formatted is not None:

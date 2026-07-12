@@ -1,4 +1,4 @@
-.terraform.lock.hcl: 
+.terraform.lock.hcl:
 	terraform init
 
 init: .terraform.lock.hcl
@@ -13,7 +13,7 @@ plan:
 tfplan.out: plan
 
 apply: tfplan.out
-	# TODO: Add check to see if you are on the VPN 
+	# TODO: Add check to see if you are on the VPN
 	tofu apply "tfplan.out"
 
 kubeconfig:
@@ -61,3 +61,4 @@ upgrade-talos:
 destroy: remove-kube-state remove-talos-state
 	tofu destroy
 
+.PHONY: init plan apply kubeconfig remove-kube-state talosconfig remove-talos-state talos-health talos-version upgrade-talos destroy

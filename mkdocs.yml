@@ -1,5 +1,10 @@
 site_name: BS Bingo
 
+# docs/sphinx/ is a separate Sphinx/MyST doc source (see docs/sphinx/conf.py) and
+# must not be picked up by mkdocs' own build.
+exclude_docs: |
+  sphinx/
+
 plugins:
   - search:
       separator: '[\s\u200b\-_,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'

@@ -143,7 +143,7 @@ tasks:
         aws s3api list-object-versions --bucket {{.TERRAFORM_STATE_BUCKET}} --output json --query='{Objects: Versions[].{Key:Key,VersionId:VersionId}}' > .versions.json 2>/dev/null || echo '{"Objects":[]}' > .versions.json
         OBJECT_COUNT=$(cat .versions.json | jq -r ".Objects | length")
         echo "Found $OBJECT_COUNT object versions to delete"
-        if [ "$OBJECT_COUNT" -gt 0 ]; then 
+        if [ "$OBJECT_COUNT" -gt 0 ]; then
           echo "Deleting $OBJECT_COUNT object versions..."
           aws s3api delete-objects --bucket {{.TERRAFORM_STATE_BUCKET}} --delete file://.versions.json --output json > /dev/null
         fi
@@ -152,7 +152,7 @@ tasks:
         aws s3api list-object-versions --bucket {{.TERRAFORM_STATE_BUCKET}} --output json --query='{Objects: DeleteMarkers[].{Key:Key,VersionId:VersionId}}' > .delete-markers.json 2>/dev/null || echo '{"Objects":[]}' > .delete-markers.json
         MARKER_COUNT=$(cat .delete-markers.json | jq -r ".Objects | length")
         echo "Found $MARKER_COUNT delete markers to remove"
-        if [ "$MARKER_COUNT" -gt 0 ]; then 
+        if [ "$MARKER_COUNT" -gt 0 ]; then
           echo "Removing $MARKER_COUNT delete markers..."
           aws s3api delete-objects --bucket {{.TERRAFORM_STATE_BUCKET}} --delete file://.delete-markers.json --output json > /dev/null
         fi
@@ -166,5 +166,3 @@ tasks:
         vars:
           RESOURCE_NAME: bootstrap
           DIR: bootstrap
-
-

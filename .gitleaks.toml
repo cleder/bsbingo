@@ -1,0 +1,11 @@
+title = "bsbingo gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+# The detect-secrets baseline stores SHA1 hashes of candidate secrets, not the
+# secrets themselves. Those hashes trip gitleaks' entropy-based heuristics.
+paths = [
+  '''(^|/)\.secrets\.baseline$''',
+]

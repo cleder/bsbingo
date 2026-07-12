@@ -11,6 +11,19 @@ handoffs:
     send: true
 ---
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [User Input](#user-input)
+- [Outline](#outline)
+- [Task Generation Rules](#task-generation-rules)
+  - [Checklist Format (REQUIRED)](#checklist-format-required)
+  - [Task Organization](#task-organization)
+  - [Phase Structure](#phase-structure)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 ## User Input
 
 ```text
