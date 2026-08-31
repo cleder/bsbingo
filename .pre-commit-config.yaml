@@ -260,6 +260,8 @@ repos:
   rev: v2.5.0
   hooks:
   - id: doctoc
+    args:
+    - --notitle
 - repo: https://github.com/trufflesecurity/truffleHog
   rev: v3.95.9
   hooks:
