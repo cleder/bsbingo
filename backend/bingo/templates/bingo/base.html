@@ -20,7 +20,7 @@
       })();
     </script>
     <link rel="stylesheet" href="{% static 'bingo/css/bingo.css' %}">
-    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <script src="{% static 'htmx.min.js' %}"></script>
     <script type="module">
       import { initThemeToggle } from "{% static 'theme-toggle.js' %}";
       initThemeToggle(document, localStorage);

@@ -23,12 +23,13 @@
     "@playwright/test": "^1.48.0",
     "c8": "^10.1.2",
     "fast-check": "^3.22.0",
+    "htmx.org": "^2.0.4",
     "typescript": "^5.6.0"
   },
   "name": "bsbingo-frontend",
   "private": true,
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && cp node_modules/htmx.org/dist/htmx.min.js dist/htmx.min.js",
     "docs:screenshots": "playwright test e2e/docs-screenshots.spec.ts",
     "e2e": "playwright test e2e",
     "test:unit": "c8 --all --src src --100 playwright test --config=playwright.unit.config.ts"

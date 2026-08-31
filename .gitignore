@@ -60,6 +60,8 @@ docker-compose.override.yml
 
 # Environment files
 env
+.env
+.env.*
 .envrc.local
 
 # vs code
